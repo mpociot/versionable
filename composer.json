@@ -23,7 +23,7 @@
             "src/migrations"
         ],
         "psr-0": {
-            "mpociot\\Versionable": "src/"
+            "Mpociot\\Versionable": "src/"
         }
     }
 }

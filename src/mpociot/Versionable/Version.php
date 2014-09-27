@@ -1,11 +1,11 @@
 <?php
-namespace Modules\Application\Traits;
+namespace Mpociot\Versionable;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class Version
- * @package Modules\Application\Traits
+ * @package Mpociot\Versionable
  */
 class Version extends Eloquent
 {
