@@ -1,0 +1,29 @@
+{
+    "name": "mpociot/versionable",
+    "license": "MIT",
+    "description": "Allows to create Laravel 4 / 5 Model versioning and restoring",
+    "keywords": ["model", "laravel", "ardent", "version", "history"],
+    "homepage": "http://github.com/mpociot/versionable",
+    "authors": [
+        {
+            "name": "Marcel Pociot",
+            "email": "m.pociot@gmail.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/mpociot/versionable/issues",
+        "source": "https://github.com/mpociot/versionable"
+    },
+    "require": {
+        "php": ">=5.3.0",
+        "illuminate/support": "~4.0|~5.0"
+    },
+    "autoload": {
+        "classmap": [
+            "src/migrations"
+        ],
+        "psr-0": {
+            "mpociot\\Versionable": "src/"
+        }
+    }
+}
