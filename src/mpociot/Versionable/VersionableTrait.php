@@ -1,9 +1,9 @@
 <?php
-namespace Modules\Application\Traits;
+namespace Mpociot\Versionable;
 
 /**
  * Class VersionableTrait
- * @package Modules\Application\Traits
+ * @package Mpociot\Versionable
  */
 trait VersionableTrait
 {
@@ -32,7 +32,7 @@ trait VersionableTrait
 
     public function versions()
     {
-        return $this->morphMany('\Modules\Application\Traits\Version', 'versionable');
+        return $this->morphMany('\Mpociot\Versionable\Version', 'versionable');
     }
 
     /**
