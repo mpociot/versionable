@@ -52,7 +52,13 @@ trait VersionableTrait
      */
     public function postSave()
     {
-        if( (!isset( $this->versioningEnabled ) || $this->versioningEnabled === true) && $this->updating && $this->validForVersioning() )
+        /**
+         * We'll save new versions on updating and first creation
+         */
+        if(
+            ( (!isset( $this->versioningEnabled ) || $this->versioningEnabled === true) && $this->updating && $this->validForVersioning() ) ||
+            ( (!isset( $this->versioningEnabled ) || $this->versioningEnabled === true) && !$this->updating )
+        )
         {
             // Save a new version
             $version                    = new Version();
