@@ -36,6 +36,21 @@ trait VersionableTrait
     }
 
     /**
+     * @param $version_id
+     * @return null
+     */
+    public function getVersionModel( $version_id )
+    {
+        $version = $this->versions()->where("version_id","=", $version_id )->first();
+        if( !is_null( $version) )
+        {
+            return $version->getModel();
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Pre save hook to determine if versioning is enabled and if we're updating
      * the model
      */
@@ -52,7 +67,13 @@ trait VersionableTrait
      */
     public function postSave()
     {
-        if( (!isset( $this->versioningEnabled ) || $this->versioningEnabled === true) && $this->updating && $this->validForVersioning() )
+        /**
+         * We'll save new versions on updating and first creation
+         */
+        if(
+            ( (!isset( $this->versioningEnabled ) || $this->versioningEnabled === true) && $this->updating && $this->validForVersioning() ) ||
+            ( (!isset( $this->versioningEnabled ) || $this->versioningEnabled === true) && !$this->updating )
+        )
         {
             // Save a new version
             $version                    = new Version();

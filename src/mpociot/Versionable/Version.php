@@ -48,6 +48,7 @@ class Version extends Eloquent
         $model = new $this->versionable_type();
         \Eloquent::unguard();
         $model->fill( unserialize( $this->model_data ) );
+        $model->exists = true;
         \Eloquent::reguard();
         return $model;
     }
