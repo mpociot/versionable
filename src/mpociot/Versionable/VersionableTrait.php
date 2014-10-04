@@ -21,11 +21,11 @@ trait VersionableTrait
         parent::boot();
 
         static::saving(function ($model) {
-            $model->preSave();
+            $model->versionablePreSave();
         });
 
         static::saved(function ($model) {
-            $model->postSave();
+            $model->versionablePostSave();
         });
 
     }
@@ -54,7 +54,7 @@ trait VersionableTrait
      * Pre save hook to determine if versioning is enabled and if we're updating
      * the model
      */
-    public function preSave()
+    public function versionablePreSave()
     {
         if( !isset( $this->versioningEnabled ) || $this->versioningEnabled === true )
         {
@@ -65,7 +65,7 @@ trait VersionableTrait
     /**
      * Save a new version
      */
-    public function postSave()
+    public function versionablePostSave()
     {
         /**
          * We'll save new versions on updating and first creation
