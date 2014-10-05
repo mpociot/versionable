@@ -37,7 +37,7 @@ To retrieve the model state of a version simply call the `getModel` method on th
     
 #### Configuration
 
-Versionable can be configured in the model. Simply add the configuration properties in your model.
+Versionable can be configured in the Model that uses the Trait. Simply add the configuration properties in your Model.
 
     // do not store the content of these fields
     public $dontVersionFields = [ 'last_login_date' ];
