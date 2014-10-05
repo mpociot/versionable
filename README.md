@@ -1,7 +1,7 @@
 # Versionable
 ## Easy to use Model versioning for Laravel 4 and Laravel 5
 
-With this package you can create a history of the objects stored in your database. You just need to insert the VersionableTrait in each Model that you want to set under version control. All versions are stored in a new database table.
+With this package you can create a history of the objects stored in your application. You just need to insert the VersionableTrait in each Model that you want to set under version control. All versions are stored in a new database table.
 
 ### Installation
 
@@ -11,12 +11,24 @@ With this package you can create a history of the objects stored in your databas
 * Run the migrations from this package
 `php artisan migrate --package=mpociot/versionable`
 
+### Examples
+
+Store each change of
+* a product to roll back the changes later
+* a user to prevent that the user can set an old password when he has to create a new one every n weeks
+* a document to create a document history
+* a settings model where you need to know who did the changes
+
 ### Implementation
 
 Let the Models you want to set under version control use the `VersionableTrait`.
 
-On each Model update a new version will be stored in the database.
+    use VersionableTrait;
+
+On each update of the Model a new version will be stored in the database.
 
 To retrieve all stored versions use the `versions` attribute on your model.
 
-To retrieve the model state of a version simply call the `getModel` method on the  version object.
+    $model->versions
+
+To retrieve the model state of a version simply call the `getModel` method on the version object.
