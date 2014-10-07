@@ -30,9 +30,20 @@ trait VersionableTrait
 
     }
 
+    /**
+     * @return mixed
+     */
     public function versions()
     {
         return $this->morphMany('\Mpociot\Versionable\Version', 'versionable');
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCurrentVersion()
+    {
+        return $this->versions()->first();
     }
 
     /**
@@ -85,6 +96,9 @@ trait VersionableTrait
         }
     }
 
+    /**
+     * @return bool
+     */
     private function validForVersioning()
     {
         $versionableData = $this->getDirty();
