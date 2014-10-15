@@ -37,7 +37,7 @@ To retrieve the model state of a version simply call the `getModel` method on th
 
 To restore the old state of a model, call the `restoreVersion` method on the retrieved model. This will then again create a new version, containing your current model state.
 
-    $model = $version->getModel();
+    $model->restoreVersion();
     
 #### Configuration
 
