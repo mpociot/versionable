@@ -62,6 +62,22 @@ trait VersionableTrait
     }
 
     /**
+     * Restore the model and make it the current version
+     *
+     * @return bool
+     */
+    public function restoreVersion()
+    {
+        unset( $this->{$this->getCreatedAtColumn()} );
+        unset( $this->{$this->getUpdatedAtColumn()} );
+        if( function_exists('getDeletedAtColumn') )
+        {
+            unset( $this->{$this->getDeletedAtColumn()} );
+        }
+        return $this->save();
+    }
+
+    /**
      * Pre save hook to determine if versioning is enabled and if we're updating
      * the model
      */
@@ -91,7 +107,7 @@ trait VersionableTrait
             $version->versionable_id    = $this->getKey();
             $version->versionable_type  = get_class( $this );
             $version->user_id           = $this->getAuthUserId();
-            $version->model_data        = serialize( $this->toArray() );
+            $version->model_data        = serialize( $this->getAttributes() );
             $version->save();
         }
     }
