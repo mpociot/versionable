@@ -34,6 +34,10 @@ To retrieve all stored versions as an array use the `versions` attribute on your
 To retrieve the model state of a version simply call the `getModel` method on the version object.
 
     $model = $version->getModel();
+
+To restore the old state of a model, call the `restoreVersion` method on the retrieved model. This will then again create a new version, containing your current model state.
+
+    $model = $version->getModel();
     
 #### Configuration
 
