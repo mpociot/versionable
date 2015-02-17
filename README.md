@@ -3,6 +3,10 @@
 
 With this package you can create a history of the objects stored in your application. You just need to insert the VersionableTrait in each Model that you want to set under version control. All versions are stored in a new database table.
 
+![image](http://img.shields.io/packagist/v/mpociot/versionable.svg?style=flat)
+![image](http://img.shields.io/packagist/l/mpociot/versionable.svg?style=flat)
+![image](http://img.shields.io/packagist/dt/mpociot/versionable.svg?style=flat)
+
 ### Examples
 
 Store each change of
@@ -37,7 +41,7 @@ To retrieve the model state of a version simply call the `getModel` method on th
 
 To restore the old state of a model, call the `restoreVersion` method on the retrieved model. This will then again create a new version, containing your current model state.
 
-    $model = $version->getModel();
+    $version->restoreVersion();
     
 #### Configuration
 
