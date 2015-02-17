@@ -48,7 +48,7 @@ trait VersionableTrait
      */
     public function getCurrentVersion()
     {
-        return $this->versions()->first();
+        return $this->versions()->orderBy( Version::CREATED_AT , 'DESC' )->first();
     }
 
     /**
