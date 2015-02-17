@@ -14,6 +14,11 @@ trait VersionableTrait
     private $updating;
 
     /**
+     * @var array
+     */
+    private $versionableDirtyData;
+
+    /**
      * Initialize model events
      */
     public static function boot()
@@ -85,7 +90,8 @@ trait VersionableTrait
     {
         if( !isset( $this->versioningEnabled ) || $this->versioningEnabled === true )
         {
-            $this->updating     = $this->exists;
+            $this->versionableDirtyData   = $this->getDirty();
+            $this->updating               = $this->exists;
         }
     }
 
@@ -117,7 +123,7 @@ trait VersionableTrait
      */
     private function validForVersioning()
     {
-        $versionableData = $this->getDirty();
+        $versionableData = $this->versionableDirtyData;
         unset( $versionableData[ $this->getUpdatedAtColumn() ] );
         if( function_exists('getDeletedAtColumn') )
         {
@@ -131,6 +137,7 @@ trait VersionableTrait
                 unset( $versionableData[ $fieldName ] );
             }
         }
+        unset( $this->versionableDirtyData );
         return ( count( $versionableData ) > 0 );
     }
 
