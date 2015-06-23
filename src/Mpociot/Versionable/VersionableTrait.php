@@ -145,6 +145,7 @@ trait VersionableTrait
      */
     private function validForVersioning()
     {
+
         $versionableData = $this->versionableDirtyData;
         unset( $versionableData[ $this->getUpdatedAtColumn() ] );
         if( function_exists('getDeletedAtColumn') )
@@ -159,7 +160,7 @@ trait VersionableTrait
                 unset( $versionableData[ $fieldName ] );
             }
         }
-        unset( $this->versionableDirtyData );
+
         return ( count( $versionableData ) > 0 );
     }
 
