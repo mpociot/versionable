@@ -21,7 +21,7 @@ Store each change of
 `"mpociot/versionable": "1.*"`
 * Update your installation `composer update`
 * Run the migrations from this package
-`php artisan migrate --package=mpociot/versionable`
+`php artisan migrate --path=vendor/mpociot/versionable/src/migrations`
 
 ### Implementation
 
