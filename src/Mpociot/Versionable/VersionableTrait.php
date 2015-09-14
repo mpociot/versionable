@@ -19,6 +19,23 @@ trait VersionableTrait
     private $versionableDirtyData;
 
     /**
+     * @var string
+     */
+    private $reason;
+
+    /**
+     * Attribute mutator for "reason"
+     * Prevent "reason" to become a database attribute of model
+     *
+     * @param string $value
+     */
+
+    public function setReasonAttribute($value)
+    {
+        $this->reason = $value;
+    }
+
+    /**
      * Initialize model events
      */
     public static function boot()
@@ -114,6 +131,11 @@ trait VersionableTrait
             $version->versionable_type  = get_class( $this );
             $version->user_id           = $this->getAuthUserId();
             $version->model_data        = serialize( $this->getAttributes() );
+
+            if (!empty($this->reason)) {
+                $version->reason = $this->reason;
+            }
+
             $version->save();
         }
     }
@@ -123,6 +145,7 @@ trait VersionableTrait
      */
     private function validForVersioning()
     {
+
         $versionableData = $this->versionableDirtyData;
         unset( $versionableData[ $this->getUpdatedAtColumn() ] );
         if( function_exists('getDeletedAtColumn') )
@@ -137,7 +160,7 @@ trait VersionableTrait
                 unset( $versionableData[ $fieldName ] );
             }
         }
-        unset( $this->versionableDirtyData );
+
         return ( count( $versionableData ) > 0 );
     }
 

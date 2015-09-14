@@ -21,7 +21,7 @@ Store each change of
 `"mpociot/versionable": "1.*"`
 * Update your installation `composer update`
 * Run the migrations from this package
-`php artisan migrate --package=mpociot/versionable`
+`php artisan migrate --path=vendor/mpociot/versionable/src/migrations`
 
 ### Implementation
 
@@ -49,3 +49,15 @@ Versionable can be configured in the Model that uses the Trait. Simply add the c
 
     // do not create a new version, when only these fields changed
     public $dontVersionFields = [ 'last_login_date' ];
+
+#### Optional field "reason"
+
+If you want to set a reason for each version, you can set this when filling a versionable Model:
+
+    protected $fillable = [/* more fields ...,*/ 'reason'];
+    
+    // in your Controller
+    $model->fill($request->only([/* more fields ...,*/ 'reason']));
+
+    // listing versions with reasons
+    echo $version->reason;
