@@ -1,7 +1,9 @@
 <?php
 namespace Mpociot\Versionable;
 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Version
@@ -35,21 +37,21 @@ class Version extends Eloquent
      */
     public function getResponsibleUserAttribute()
     {
-        $model = \Config::get( "auth.model" );
+        $model = Config::get( "auth.model" );
         return $model::find( $this->user_id );
     }
 
     /**
      * Return the versioned model
-     * @return mixed
+     * @return Model
      */
     public function getModel()
     {
         $model = new $this->versionable_type();
-        \Eloquent::unguard();
+        $model->unguard();
         $model->fill( unserialize( $this->model_data ) );
         $model->exists = true;
-        \Eloquent::reguard();
+        $model->reguard();
         return $model;
     }
 

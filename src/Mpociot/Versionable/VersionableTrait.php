@@ -1,6 +1,8 @@
 <?php
 namespace Mpociot\Versionable;
 
+use Illuminate\Support\Facades\Auth;
+
 /**
  * Class VersionableTrait
  * @package Mpociot\Versionable
@@ -24,12 +26,34 @@ trait VersionableTrait
     private $reason;
 
     /**
+     * @var bool
+     */
+    protected $versioningEnabled = true;
+
+    /**
+     * @return $this
+     */
+    public function enableVersioning()
+    {
+        $this->versioningEnabled = true;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function disableVersioning()
+    {
+        $this->versioningEnabled = false;
+        return $this;
+    }
+
+    /**
      * Attribute mutator for "reason"
      * Prevent "reason" to become a database attribute of model
      *
      * @param string $value
      */
-
     public function setReasonAttribute($value)
     {
         $this->reason = $value;
@@ -38,10 +62,8 @@ trait VersionableTrait
     /**
      * Initialize model events
      */
-    public static function boot()
+    public static function bootVersionableTrait()
     {
-        parent::boot();
-
         static::saving(function ($model) {
             $model->versionablePreSave();
         });
@@ -61,7 +83,7 @@ trait VersionableTrait
     }
 
     /**
-     * @return mixed
+     * @return Version
      */
     public function getCurrentVersion()
     {
@@ -105,7 +127,7 @@ trait VersionableTrait
      */
     public function versionablePreSave()
     {
-        if( !isset( $this->versioningEnabled ) || $this->versioningEnabled === true )
+        if( $this->versioningEnabled === true )
         {
             $this->versionableDirtyData   = $this->getDirty();
             $this->updating               = $this->exists;
@@ -121,8 +143,8 @@ trait VersionableTrait
          * We'll save new versions on updating and first creation
          */
         if(
-            ( (!isset( $this->versioningEnabled ) || $this->versioningEnabled === true) && $this->updating && $this->validForVersioning() ) ||
-            ( (!isset( $this->versioningEnabled ) || $this->versioningEnabled === true) && !$this->updating )
+            ( $this->versioningEnabled === true && $this->updating && $this->validForVersioning() ) ||
+            ( $this->versioningEnabled === true && !$this->updating )
         )
         {
             // Save a new version
@@ -153,7 +175,7 @@ trait VersionableTrait
             unset( $versionableData[ $this->getDeletedAtColumn() ] );
         }
 
-        if( isset($this->dontVersionFields) )
+        if( isset( $this->dontVersionFields) )
         {
             foreach( $this->dontVersionFields AS $fieldName )
             {
@@ -169,9 +191,9 @@ trait VersionableTrait
      */
     private function getAuthUserId()
     {
-        if( \Auth::check() )
+        if( Auth::check() )
         {
-            return \Auth::id();
+            return Auth::id();
         }
         return null;
     }
