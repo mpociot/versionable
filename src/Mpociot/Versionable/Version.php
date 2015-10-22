@@ -37,8 +37,8 @@ class Version extends Eloquent
      */
     public function getResponsibleUserAttribute()
     {
-        $model = Config::get( "auth.model" );
-        return $model::find( $this->user_id );
+        $model = Config::get("auth.model");
+        return $model::find($this->user_id);
     }
 
     /**
@@ -49,10 +49,27 @@ class Version extends Eloquent
     {
         $model = new $this->versionable_type();
         $model->unguard();
-        $model->fill( unserialize( $this->model_data ) );
+        $model->fill(unserialize($this->model_data));
         $model->exists = true;
         $model->reguard();
         return $model;
+    }
+
+
+    /**
+     * Restore the model and make it the current version
+     *
+     * @return bool
+     */
+    public function restore()
+    {
+        $model = $this->getModel();
+        unset( $model->{$model->getCreatedAtColumn()} );
+        unset( $model->{$model->getUpdatedAtColumn()} );
+        if (method_exists($model, 'getDeletedAtColumn')) {
+            unset( $model->{$model->getDeletedAtColumn()} );
+        }
+        return $model->save();
     }
 
 }

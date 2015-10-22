@@ -22,24 +22,24 @@ abstract class VersionableTestCase extends PHPUnit_Framework_TestCase
             'collation' => 'utf8_unicode_ci',
             'prefix'    => '',
         ));
-        $db->setEventDispatcher( new Dispatcher(new Container) );
+        $db->setEventDispatcher(new Dispatcher(new Container));
         $db->bootEloquent();
         $db->setAsGlobal();
     }
 
     public function migrateUsersTable()
     {
-        DB::schema()->create('users', function($table) {
+        DB::schema()->create('users', function ($table) {
             $table->increments('id');
             $table->string('name');
             $table->string('email');
             $table->string('password');
             $table->datetime('last_login')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
 
-        DB::schema()->create('versions', function($table)
-        {
+        DB::schema()->create('versions', function ($table) {
             $table->increments('version_id');
             $table->integer('versionable_id');
             $table->text('versionable_type');

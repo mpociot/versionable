@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Mockery as m;
 
 class VersionableTest extends VersionableTestCase
@@ -74,6 +75,42 @@ class VersionableTest extends VersionableTestCase
         $this->assertEquals( $user_id, $version->user_id );
     }
 
+    public function testGetResponsibleUserAttribute()
+    {
+        Auth::shouldReceive('check')
+            ->andReturn( true );
+
+        Auth::shouldReceive('id')
+            ->andReturn( 1 );
+
+
+        $responsibleOrigUser = new TestVersionableUser();
+        $responsibleOrigUser->name = "Marcel";
+        $responsibleOrigUser->email = "m.pociot@test.php";
+        $responsibleOrigUser->password = "12345";
+        $responsibleOrigUser->last_login = $responsibleOrigUser->freshTimestamp();
+        $responsibleOrigUser->save();
+
+        Config::shouldReceive('get')
+            ->once()
+            ->with("auth.model")
+            ->andReturn('TestVersionableUser');
+
+        $user = new TestVersionableUser();
+        $user->name = "John";
+        $user->email = "j.tester@test.php";
+        $user->password = "67890";
+        $user->last_login = $user->freshTimestamp();
+        $user->save();
+
+        $version = $user->getCurrentVersion();
+
+        $responsibleUser = $version->responsible_user;
+        $this->assertEquals( $responsibleUser->getKey(), 1 );
+        $this->assertEquals( $responsibleUser->name, $responsibleOrigUser->name );
+        $this->assertEquals( $responsibleUser->email, $responsibleOrigUser->email );
+    }
+
 
     public function testDontVersionEveryAttribute()
     {
@@ -93,7 +130,6 @@ class VersionableTest extends VersionableTestCase
         $this->assertCount( 1, $user->versions );
     }
 
-
     public function testVersionEveryAttribute()
     {
         Auth::shouldReceive('check')
@@ -112,7 +148,6 @@ class VersionableTest extends VersionableTestCase
         $this->assertCount( 2, $user->versions );
     }
 
-
     public function testCheckForVersioningEnabled()
     {
         Auth::shouldReceive('check')
@@ -130,7 +165,13 @@ class VersionableTest extends VersionableTestCase
         $user->last_login = $user->freshTimestamp();
         $user->save();
 
-        $this->assertCount( 0, $user->versions );
+        $this->assertCount( 0, $user->versions()->get() );
+
+        $user->enableVersioning();
+        $user->last_login = $user->freshTimestamp();
+        $user->save();
+
+        $this->assertCount( 1, $user->versions()->get() );
     }
 
 
@@ -154,6 +195,101 @@ class VersionableTest extends VersionableTestCase
         $this->assertCount( 1, $user->versions );
     }
 
+    public function testCanRestoreVersion()
+    {
+        Auth::shouldReceive('check')
+            ->andReturn( false );
+
+        $user = new TestVersionableUser();
+
+        $user->name = "Marcel";
+        $user->email = "m.pociot@test.php";
+        $user->password = "12345";
+        $user->last_login = $user->freshTimestamp();
+        $user->save();
+
+        $user_id = $user->getKey();
+
+        $user->name = "John";
+        $user->save();
+
+        $newUser = TestVersionableUser::find( $user_id );
+        $this->assertEquals( "John", $newUser->name );
+
+        // Fetch first version and restore ist
+        $newUser->versions()->first()->restore();
+
+        $newUser = TestVersionableUser::find( $user_id );
+        $this->assertEquals( "Marcel", $newUser->name );
+    }
+
+    public function testGetVersionModel()
+    {
+        Auth::shouldReceive('check')
+            ->andReturn( false );
+
+        // Create 3 versions
+        $user = new TestVersionableUser();
+        $user->name = "Marcel";
+        $user->email = "m.pociot@test.php";
+        $user->password = "12345";
+        $user->last_login = $user->freshTimestamp();
+        $user->save();
+
+        $user->name = "John";
+        $user->save();
+
+        $user->name = "Michael";
+        $user->save();
+
+        $this->assertCount( 3, $user->versions );
+
+        $this->assertEquals( "Marcel", $user->getVersionModel( 1 )->name );
+        $this->assertEquals( "John", $user->getVersionModel( 2 )->name );
+        $this->assertEquals( "Michael", $user->getVersionModel( 3 )->name );
+        $this->assertEquals( null, $user->getVersionModel( 4 ) );
+
+    }
+
+    public function testUseReasonAttribute()
+    {
+        Auth::shouldReceive('check')
+            ->andReturn( false );
+
+        // Create 3 versions
+        $user = new TestVersionableUser();
+        $user->name = "Marcel";
+        $user->email = "m.pociot@test.php";
+        $user->password = "12345";
+        $user->last_login = $user->freshTimestamp();
+        $user->reason = "Doing tests";
+        $user->save();
+
+        $this->assertEquals( "Doing tests", $user->getCurrentVersion()->reason );
+    }
+
+    public function testIgnoreDeleteTimestamp()
+    {
+        Auth::shouldReceive('check')
+            ->andReturn( false );
+
+        $user = new TestVersionableSoftDeleteUser();
+        $user->name = "Marcel";
+        $user->email = "m.pociot@test.php";
+        $user->password = "12345";
+        $user->last_login = $user->freshTimestamp();
+        $user->save();
+
+        $user_id = $user->getKey();
+        $this->assertNull( $user->deleted_at );
+
+        $user->delete();
+
+        $this->assertNotNull( $user->deleted_at );
+
+        $this->assertCount( 1 , $user->versions );
+    }
+
 
 }
 
@@ -162,6 +298,13 @@ class VersionableTest extends VersionableTestCase
 
 class TestVersionableUser extends Illuminate\Database\Eloquent\Model {
     use \Mpociot\Versionable\VersionableTrait;
+
+    protected $table = "users";
+}
+
+class TestVersionableSoftDeleteUser extends Illuminate\Database\Eloquent\Model {
+    use \Mpociot\Versionable\VersionableTrait;
+    use \Illuminate\Database\Eloquent\SoftDeletes;
 
     protected $table = "users";
 }

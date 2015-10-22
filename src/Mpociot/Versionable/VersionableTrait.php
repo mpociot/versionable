@@ -2,6 +2,7 @@
 namespace Mpociot\Versionable;
 
 use Illuminate\Support\Facades\Auth;
+use Mpociot\Versionable\Version;
 
 /**
  * Class VersionableTrait
@@ -79,7 +80,7 @@ trait VersionableTrait
      */
     public function versions()
     {
-        return $this->morphMany('\Mpociot\Versionable\Version', 'versionable');
+        return $this->morphMany(Version::class, 'versionable');
     }
 
     /**
@@ -87,74 +88,54 @@ trait VersionableTrait
      */
     public function getCurrentVersion()
     {
-        return $this->versions()->orderBy( Version::CREATED_AT , 'DESC' )->first();
+        return $this->versions()->orderBy(Version::CREATED_AT, 'DESC')->first();
     }
 
     /**
      * @param $version_id
-     * @return null
+     * @return $this|null
      */
-    public function getVersionModel( $version_id )
+    public function getVersionModel($version_id)
     {
-        $version = $this->versions()->where("version_id","=", $version_id )->first();
-        if( !is_null( $version) )
-        {
+        $version = $this->versions()->where("version_id", "=", $version_id)->first();
+        if (!is_null($version)) {
             return $version->getModel();
-        } else {
-            return null;
         }
-    }
-
-    /**
-     * Restore the model and make it the current version
-     *
-     * @return bool
-     */
-    public function restoreVersion()
-    {
-        unset( $this->{$this->getCreatedAtColumn()} );
-        unset( $this->{$this->getUpdatedAtColumn()} );
-        if( function_exists('getDeletedAtColumn') )
-        {
-            unset( $this->{$this->getDeletedAtColumn()} );
-        }
-        return $this->save();
+        return null;
     }
 
     /**
      * Pre save hook to determine if versioning is enabled and if we're updating
      * the model
      */
-    public function versionablePreSave()
+    protected function versionablePreSave()
     {
-        if( $this->versioningEnabled === true )
-        {
-            $this->versionableDirtyData   = $this->getDirty();
-            $this->updating               = $this->exists;
+        if ($this->versioningEnabled === true) {
+            $this->versionableDirtyData = $this->getDirty();
+            $this->updating             = $this->exists;
         }
     }
 
     /**
      * Save a new version
      */
-    public function versionablePostSave()
+    protected function versionablePostSave()
     {
         /**
          * We'll save new versions on updating and first creation
          */
-        if(
-            ( $this->versioningEnabled === true && $this->updating && $this->validForVersioning() ) ||
+        if (
+            ( $this->versioningEnabled === true && $this->updating && $this->isValidForVersioning() ) ||
             ( $this->versioningEnabled === true && !$this->updating )
-        )
-        {
+        ) {
             // Save a new version
-            $version                    = new Version();
-            $version->versionable_id    = $this->getKey();
-            $version->versionable_type  = get_class( $this );
-            $version->user_id           = $this->getAuthUserId();
-            $version->model_data        = serialize( $this->getAttributes() );
+            $version                   = new Version();
+            $version->versionable_id   = $this->getKey();
+            $version->versionable_type = get_class($this);
+            $version->user_id          = $this->getAuthUserId();
+            $version->model_data       = serialize($this->getAttributes());
 
-            if (!empty($this->reason)) {
+            if (!empty( $this->reason )) {
                 $version->reason = $this->reason;
             }
 
@@ -165,25 +146,24 @@ trait VersionableTrait
     /**
      * @return bool
      */
-    private function validForVersioning()
+    private function isValidForVersioning()
     {
 
         $versionableData = $this->versionableDirtyData;
+
         unset( $versionableData[ $this->getUpdatedAtColumn() ] );
-        if( function_exists('getDeletedAtColumn') )
-        {
+
+        if (function_exists('getDeletedAtColumn')) {
             unset( $versionableData[ $this->getDeletedAtColumn() ] );
         }
 
-        if( isset( $this->dontVersionFields) )
-        {
-            foreach( $this->dontVersionFields AS $fieldName )
-            {
+        if (isset( $this->dontVersionFields )) {
+            foreach ($this->dontVersionFields AS $fieldName) {
                 unset( $versionableData[ $fieldName ] );
             }
         }
 
-        return ( count( $versionableData ) > 0 );
+        return ( count($versionableData) > 0 );
     }
 
     /**
@@ -191,13 +171,11 @@ trait VersionableTrait
      */
     private function getAuthUserId()
     {
-        if( Auth::check() )
-        {
+        if (Auth::check()) {
             return Auth::id();
         }
         return null;
     }
-
 
 
 }
