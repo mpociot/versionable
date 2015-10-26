@@ -7,7 +7,7 @@ With this package you can create a history of the objects stored in your applica
 ![image](http://img.shields.io/packagist/v/mpociot/versionable.svg?style=flat)
 ![image](http://img.shields.io/packagist/l/mpociot/versionable.svg?style=flat)
 ![image](http://img.shields.io/packagist/dt/mpociot/versionable.svg?style=flat)
-[![Code Coverage](https://scrutinizer-ci.com/g/mpociot/versionable/badges/coverage.png?b=2.0)](https://scrutinizer-ci.com/g/mpociot/versionable/?branch=2.0)
+[![codecov.io](https://codecov.io/github/mpociot/versionable/coverage.svg?branch=2.0)](https://codecov.io/github/mpociot/versionable?branch=develop)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/mpociot/versionable/badges/quality-score.png?b=2.0)](https://scrutinizer-ci.com/g/mpociot/versionable/?branch=2.0)
 [![Build Status](https://travis-ci.org/mpociot/versionable.svg?branch=2.0)](https://travis-ci.org/mpociot/versionable)
 
