@@ -2,7 +2,7 @@
 namespace Mpociot\Versionable;
 
 use Illuminate\Support\Facades\Auth;
-use Mpociot\Versionable\Version;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
  * Class VersionableTrait
@@ -12,21 +12,27 @@ trait VersionableTrait
 {
 
     /**
+     * Private variable to detect if this is an update
+     * or an insert
      * @var bool
      */
     private $updating;
 
     /**
+     * Contains all dirty data that is valid for versioning
+     *
      * @var array
      */
     private $versionableDirtyData;
 
     /**
+     * Optional reason, why this version was created
      * @var string
      */
     private $reason;
 
     /**
+     * Flag that determines if the model allows versioning at all
      * @var bool
      */
     protected $versioningEnabled = true;
@@ -76,7 +82,8 @@ trait VersionableTrait
     }
 
     /**
-     * @return mixed
+     * Return all versions of the model
+     * @return MorphMany
      */
     public function versions()
     {
@@ -84,6 +91,7 @@ trait VersionableTrait
     }
 
     /**
+     * Returns the latest version available
      * @return Version
      */
     public function getCurrentVersion()
@@ -92,7 +100,10 @@ trait VersionableTrait
     }
 
     /**
+     * Get a model based on the version id
+     *
      * @param $version_id
+     *
      * @return $this|null
      */
     public function getVersionModel($version_id)
@@ -107,6 +118,7 @@ trait VersionableTrait
     /**
      * Pre save hook to determine if versioning is enabled and if we're updating
      * the model
+     * @return void
      */
     protected function versionablePreSave()
     {
@@ -117,7 +129,8 @@ trait VersionableTrait
     }
 
     /**
-     * Save a new version
+     * Save a new version.
+     * @return void
      */
     protected function versionablePostSave()
     {
@@ -144,26 +157,20 @@ trait VersionableTrait
     }
 
     /**
+     * Determine if a new version should be created for this model.
+     *
      * @return bool
      */
     private function isValidForVersioning()
     {
+        $dontVersionFields = isset( $this->dontVersionFields ) ? $this->dontVersionFields : [];
+        $removeableKeys    = array_merge($dontVersionFields, [$this->getUpdatedAtColumn()]);
 
-        $versionableData = $this->versionableDirtyData;
-
-        unset( $versionableData[ $this->getUpdatedAtColumn() ] );
-
-        if (function_exists('getDeletedAtColumn')) {
-            unset( $versionableData[ $this->getDeletedAtColumn() ] );
+        if (method_exists($this, 'getDeletedAtColumn')) {
+            $removeableKeys[] = $this->getDeletedAtColumn();
         }
 
-        if (isset( $this->dontVersionFields )) {
-            foreach ($this->dontVersionFields AS $fieldName) {
-                unset( $versionableData[ $fieldName ] );
-            }
-        }
-
-        return ( count($versionableData) > 0 );
+        return ( count(array_diff_key($this->versionableDirtyData, array_flip($removeableKeys))) > 0 );
     }
 
     /**

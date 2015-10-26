@@ -13,12 +13,34 @@ class VersionableTest extends VersionableTestCase
 
         TestVersionableUser::flushEventListeners();
         TestVersionableUser::boot();
+
+        TestVersionableSoftDeleteUser::flushEventListeners();
+        TestVersionableSoftDeleteUser::boot();
+
+        TestPartialVersionableUser::flushEventListeners();
+        TestPartialVersionableUser::boot();
     }
 
     public function tearDown()
     {
         m::close();
         Auth::clearResolvedInstances();
+    }
+
+    public function testVersionableRelation()
+    {
+        Auth::shouldReceive('check')
+            ->andReturn( false );
+
+        $user = new TestVersionableUser();
+        $user->name = "Marcel";
+        $user->email = "m.pociot@test.php";
+        $user->password = "12345";
+        $user->last_login = $user->freshTimestamp();
+        $user->save();
+
+        $version = $user->getCurrentVersion();
+        $this->assertInstanceOf( TestVersionableUser::class, $version->versionable );
     }
 
     public function testInitialSaveShouldCreateVersion()
@@ -223,6 +245,34 @@ class VersionableTest extends VersionableTestCase
         $this->assertEquals( "Marcel", $newUser->name );
     }
 
+    public function testCanRestoreSoftDeleteVersion()
+    {
+        Auth::shouldReceive('check')
+            ->andReturn( false );
+
+        $user = new TestVersionableSoftDeleteUser();
+
+        $user->name = "Marcel";
+        $user->email = "m.pociot@test.php";
+        $user->password = "12345";
+        $user->last_login = $user->freshTimestamp();
+        $user->save();
+
+        $user_id = $user->getKey();
+
+        $user->name = "John";
+        $user->save();
+
+        $newUser = TestVersionableSoftDeleteUser::find( $user_id );
+        $this->assertEquals( "John", $newUser->name );
+
+        // Fetch first version and restore ist
+        $newUser->versions()->first()->restore();
+
+        $newUser = TestVersionableSoftDeleteUser::find( $user_id );
+        $this->assertEquals( "Marcel", $newUser->name );
+    }
+
     public function testGetVersionModel()
     {
         Auth::shouldReceive('check')
@@ -280,6 +330,7 @@ class VersionableTest extends VersionableTestCase
         $user->last_login = $user->freshTimestamp();
         $user->save();
 
+        $this->assertCount( 1 , $user->versions );
         $user_id = $user->getKey();
         $this->assertNull( $user->deleted_at );
 
