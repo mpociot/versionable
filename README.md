@@ -3,9 +3,13 @@
 
 With this package you can create a history of the objects stored in your application. You just need to insert the VersionableTrait in each Model that you want to set under version control. All versions are stored in a new database table.
 
+
 ![image](http://img.shields.io/packagist/v/mpociot/versionable.svg?style=flat)
 ![image](http://img.shields.io/packagist/l/mpociot/versionable.svg?style=flat)
 ![image](http://img.shields.io/packagist/dt/mpociot/versionable.svg?style=flat)
+[![Code Coverage](https://scrutinizer-ci.com/g/mpociot/versionable/badges/coverage.png?b=2.0)](https://scrutinizer-ci.com/g/mpociot/versionable/?branch=2.0)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/mpociot/versionable/badges/quality-score.png?b=2.0)](https://scrutinizer-ci.com/g/mpociot/versionable/?branch=2.0)
+[![Build Status](https://travis-ci.org/mpociot/versionable.svg?branch=2.0)](https://travis-ci.org/mpociot/versionable)
 
 ### Examples
 
