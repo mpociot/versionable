@@ -11,3 +11,8 @@ before_script:
 
 script:
   - composer test
+
+before_install:
+  - pip install codecov
+after_success:
+  - codecov
