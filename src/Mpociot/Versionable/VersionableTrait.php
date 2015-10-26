@@ -94,9 +94,18 @@ trait VersionableTrait
      * Returns the latest version available
      * @return Version
      */
-    public function getCurrentVersion()
+    public function currentVersion()
     {
         return $this->versions()->orderBy(Version::CREATED_AT, 'DESC')->first();
+    }
+
+    /**
+     * Returns the previous version
+     * @return Version
+     */
+    public function previousVersion()
+    {
+        return $this->versions()->orderBy(Version::CREATED_AT, 'DESC')->limit(1)->offset(1)->first();
     }
 
     /**

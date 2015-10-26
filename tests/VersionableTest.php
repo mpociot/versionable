@@ -39,7 +39,7 @@ class VersionableTest extends VersionableTestCase
         $user->last_login = $user->freshTimestamp();
         $user->save();
 
-        $version = $user->getCurrentVersion();
+        $version = $user->currentVersion();
         $this->assertInstanceOf( TestVersionableUser::class, $version->versionable );
     }
 
@@ -58,6 +58,45 @@ class VersionableTest extends VersionableTestCase
         $this->assertCount(1, $user->versions );
     }
 
+    public function testRetrievePreviousVersionFails()
+    {
+        Auth::shouldReceive('check')
+            ->andReturn( false );
+
+        $user = new TestVersionableUser();
+        $user->name = "Marcel";
+        $user->email = "m.pociot@test.php";
+        $user->password = "12345";
+        $user->last_login = $user->freshTimestamp();
+        $user->save();
+
+        $this->assertCount(1, $user->versions );
+        $this->assertNull( $user->previousVersion() );
+    }
+
+    public function testRetrievePreviousVersionExists()
+    {
+        Auth::shouldReceive('check')
+            ->andReturn( false );
+
+        $user = new TestVersionableUser();
+        $user->name = "Marcel";
+        $user->email = "m.pociot@test.php";
+        $user->password = "12345";
+        $user->last_login = $user->freshTimestamp();
+        $user->save();
+        // Needed because otherwise timestamps are exactly the same
+        sleep(1);
+
+        $user->name = "John";
+        $user->save();
+
+        $this->assertCount(2, $user->versions );
+        $this->assertNotNull( $user->previousVersion() );
+
+        $this->assertEquals( "Marcel", $user->previousVersion()->getModel()->name );
+    }
+
     public function testVersionAndModelAreEqual()
     {
         Auth::shouldReceive('check')
@@ -70,7 +109,7 @@ class VersionableTest extends VersionableTestCase
         $user->last_login = $user->freshTimestamp();
         $user->save();
 
-        $version = $user->getCurrentVersion();
+        $version = $user->currentVersion();
         $this->assertEquals( $user->attributesToArray(), $version->getModel()->attributesToArray() );
     }
 
@@ -92,7 +131,7 @@ class VersionableTest extends VersionableTestCase
         $user->last_login = $user->freshTimestamp();
         $user->save();
 
-        $version = $user->getCurrentVersion();
+        $version = $user->currentVersion();
 
         $this->assertEquals( $user_id, $version->user_id );
     }
@@ -113,6 +152,9 @@ class VersionableTest extends VersionableTestCase
         $responsibleOrigUser->last_login = $responsibleOrigUser->freshTimestamp();
         $responsibleOrigUser->save();
 
+        // Needed because otherwise timestamps are exactly the same
+        sleep(1);
+
         Config::shouldReceive('get')
             ->once()
             ->with("auth.model")
@@ -125,7 +167,7 @@ class VersionableTest extends VersionableTestCase
         $user->last_login = $user->freshTimestamp();
         $user->save();
 
-        $version = $user->getCurrentVersion();
+        $version = $user->currentVersion();
 
         $responsibleUser = $version->responsible_user;
         $this->assertEquals( $responsibleUser->getKey(), 1 );
@@ -145,6 +187,7 @@ class VersionableTest extends VersionableTestCase
         $user->password = "12345";
         $user->last_login = $user->freshTimestamp();
         $user->save();
+
 
         $user->last_login = $user->freshTimestamp();
         $user->save();
@@ -217,7 +260,7 @@ class VersionableTest extends VersionableTestCase
         $this->assertCount( 1, $user->versions );
     }
 
-    public function testCanRestoreVersion()
+    public function testCanRevertVersion()
     {
         Auth::shouldReceive('check')
             ->andReturn( false );
@@ -238,14 +281,14 @@ class VersionableTest extends VersionableTestCase
         $newUser = TestVersionableUser::find( $user_id );
         $this->assertEquals( "John", $newUser->name );
 
-        // Fetch first version and restore ist
-        $newUser->versions()->first()->restore();
+        // Fetch first version and revert ist
+        $newUser->versions()->first()->revert();
 
         $newUser = TestVersionableUser::find( $user_id );
         $this->assertEquals( "Marcel", $newUser->name );
     }
 
-    public function testCanRestoreSoftDeleteVersion()
+    public function testCanRevertSoftDeleteVersion()
     {
         Auth::shouldReceive('check')
             ->andReturn( false );
@@ -266,10 +309,11 @@ class VersionableTest extends VersionableTestCase
         $newUser = TestVersionableSoftDeleteUser::find( $user_id );
         $this->assertEquals( "John", $newUser->name );
 
-        // Fetch first version and restore ist
-        $newUser->versions()->first()->restore();
+        // Fetch first version and revert ist
+        $reverted = $newUser->versions()->first()->revert();
 
         $newUser = TestVersionableSoftDeleteUser::find( $user_id );
+        $this->assertEquals( "Marcel", $reverted->name );
         $this->assertEquals( "Marcel", $newUser->name );
     }
 
@@ -315,7 +359,7 @@ class VersionableTest extends VersionableTestCase
         $user->reason = "Doing tests";
         $user->save();
 
-        $this->assertEquals( "Doing tests", $user->getCurrentVersion()->reason );
+        $this->assertEquals( "Doing tests", $user->currentVersion()->reason );
     }
 
     public function testIgnoreDeleteTimestamp()

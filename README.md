@@ -1,9 +1,6 @@
 # Versionable
 ## Easy to use Model versioning for Laravel 4 and Laravel 5
 
-With this package you can create a history of the objects stored in your application. You just need to insert the VersionableTrait in each Model that you want to set under version control. All versions are stored in a new database table.
-
-
 ![image](http://img.shields.io/packagist/v/mpociot/versionable.svg?style=flat)
 ![image](http://img.shields.io/packagist/l/mpociot/versionable.svg?style=flat)
 ![image](http://img.shields.io/packagist/dt/mpociot/versionable.svg?style=flat)
@@ -11,57 +8,120 @@ With this package you can create a history of the objects stored in your applica
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/mpociot/versionable/badges/quality-score.png?b=2.0)](https://scrutinizer-ci.com/g/mpociot/versionable/?branch=2.0)
 [![Build Status](https://travis-ci.org/mpociot/versionable.svg?branch=2.0)](https://travis-ci.org/mpociot/versionable)
 
-### Examples
+Keep track of all your model changes and revert to previous version of it.
 
-Store each change of
-* a product to roll back the changes later
-* a user to prevent that the user can set an old password when he has to create a new one every n weeks
-* a document to create a document history
-* a settings model where you need to know who did the changes
 
-### Installation
+```php
+// Restore to the previous change
+$content->previousVersion()->revert();
 
-* Add the following line to your `require` array of the `composer.json` file:
-`"mpociot/versionable": "1.*"`
-* Update your installation `composer update`
-* Run the migrations from this package
-`php artisan migrate --path=vendor/mpociot/versionable/src/migrations`
+// Get model from a version
+$oldModel = Version::find(100)->getModel();
+```
 
-### Implementation
+
+## Contents
+
+- [Installation](#installation)
+- [Implementation](#implementation)
+- [Usage](#usage)
+    - [Exclude attributes from versioning](#exclude)
+    - [Retrieving all versions associated to a model](#retrieve)
+    - [Revert to a previous version](#revert)
+- [License](#license) 
+
+<a name="installation" />
+## Installation
+
+In order to add Versionable to your project, just add 
+
+    "mpociot/versionable": "~2.0"
+
+to your composer.json. Then run `composer install` or `composer update`.
+
+Or run `composer require mpociot/versionable ` if you prefere that.
+
+Run the migrations to create the "versions" table that will hold all version information.
+
+```bash
+php artisan migrate --path=vendor/mpociot/versionable/src/migrations
+```
+
+<a name="usage" />
+## Usage
 
 Let the Models you want to set under version control use the `VersionableTrait`.
 
-    use VersionableTrait;
+```php
+class Content extends Model {
+	
+	use Mpociot\Versionable\VersionableTrait;
+	
+}
+```
+That's it!
 
-On each update of the Model a new version will be stored in the database.
+Every time you update your model, a new version containing the previous attributes will be stores in your database. 
 
-To retrieve all stored versions as an array use the `versions` attribute on your model.
+All timestamps and the possible soft-delete timestamp will be ignored.
 
-    $model->versions;
+<a name="exclude" />
+### Exclude attributes from versioning
 
-To retrieve the model state of a version simply call the `getModel` method on the version object.
+Sometimes you don't want to create a version *every* time an attribute on your model changes. For example your User model might have a `last_login_at` attribute. 
+I'm pretty sure you don't want to create a new version of your User model every time that user logs in.
 
-    $model = $version->getModel();
+To exclude specific attributes from versioning, add a new array property to your model named `dontVersionFields`.
 
-To restore the old state of a model, call the `restoreVersion` method on the retrieved model. This will then again create a new version, containing your current model state.
+```php
+class User extends Model {
+	
+	use Mpociot\Versionable\VersionableTrait;
+	
+	/**
+	 * @var array
+	 */
+	protected $dontVersionFields = [ 'last_login_at' ];
 
-    $version->restoreVersion();
-    
-#### Configuration
+}
+```
 
-Versionable can be configured in the Model that uses the Trait. Simply add the configuration properties in your Model.
+<a name="retrieve" />
+### Retrieving all versions associated to a model
 
-    // do not create a new version, when only these fields changed
-    public $dontVersionFields = [ 'last_login_date' ];
+To retrieve all stored versions use the `versions` attribute on your model.
 
-#### Optional field "reason"
+This attribute can also be accessed like any other Laravel relation, since it is a `MorphMany` relation.
 
-If you want to set a reason for each version, you can set this when filling a versionable Model:
+```php
+$model->versions;
+```
 
-    protected $fillable = [/* more fields ...,*/ 'reason'];
-    
-    // in your Controller
-    $model->fill($request->only([/* more fields ...,*/ 'reason']));
+<a name="revert" />
+### Revert to a previous version
 
-    // listing versions with reasons
-    echo $version->reason;
+Saving versions is pretty cool, but the real benefit will be the ability to revert to a specific version.
+
+There are multiple ways to do this.
+
+**Revert to the previous version**
+
+You can easiliy revert to the version prior to the currently active version using:
+
+```php
+$content->previousVersion()->revert();
+```
+
+**Revert to a specific version ID**
+
+You can also revert to a specific version ID of a model using:
+
+```php
+$revertedModel = Version::find( $version_id )->revert();
+```
+
+
+<a name="license" />
+## License
+
+Versionable is free software distributed under the terms of the MIT license.

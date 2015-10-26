@@ -57,11 +57,11 @@ class Version extends Eloquent
 
 
     /**
-     * Restore the model and make it the current version
+     * Revert to the stored model version make it the current version
      *
-     * @return bool
+     * @return Model
      */
-    public function restore()
+    public function revert()
     {
         $model = $this->getModel();
         unset( $model->{$model->getCreatedAtColumn()} );
@@ -69,7 +69,8 @@ class Version extends Eloquent
         if (method_exists($model, 'getDeletedAtColumn')) {
             unset( $model->{$model->getDeletedAtColumn()} );
         }
-        return $model->save();
+        $model->save();
+        return $model;
     }
 
 }
