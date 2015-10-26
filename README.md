@@ -4,9 +4,9 @@
 ![image](http://img.shields.io/packagist/v/mpociot/versionable.svg?style=flat)
 ![image](http://img.shields.io/packagist/l/mpociot/versionable.svg?style=flat)
 ![image](http://img.shields.io/packagist/dt/mpociot/versionable.svg?style=flat)
-[![codecov.io](https://codecov.io/github/mpociot/versionable/coverage.svg?branch=2.0)](https://codecov.io/github/mpociot/versionable?branch=develop)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/mpociot/versionable/badges/quality-score.png?b=2.0)](https://scrutinizer-ci.com/g/mpociot/versionable/?branch=2.0)
-[![Build Status](https://travis-ci.org/mpociot/versionable.svg?branch=2.0)](https://travis-ci.org/mpociot/versionable)
+[![codecov.io](https://codecov.io/github/mpociot/versionable/coverage.svg?branch=master)](https://codecov.io/github/mpociot/versionable?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/mpociot/versionable/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/mpociot/versionable/?branch=master)
+[![Build Status](https://travis-ci.org/mpociot/versionable.svg?branch=master)](https://travis-ci.org/mpociot/versionable)
 
 Keep track of all your model changes and revert to previous version of it.
 
