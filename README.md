@@ -27,7 +27,9 @@ $oldModel = Version::find(100)->getModel();
 - [Usage](#usage)
     - [Exclude attributes from versioning](#exclude)
     - [Retrieving all versions associated to a model](#retrieve)
+    - [Getting a diff of two versions](#diff)
     - [Revert to a previous version](#revert)
+- [FAQ](#faq) 
 - [License](#license) 
 
 <a name="installation" />
@@ -97,6 +99,28 @@ This attribute can also be accessed like any other Laravel relation, since it is
 $model->versions;
 ```
 
+<a name="diff" />
+### Getting a diff of two versions
+
+If you want to know, what exactly has changed between two versions, use the version model's `diff` method.
+
+The diff method takes a version model as an argument. This defines the version to diff against. If no version is provided, it will use the current version.
+
+```php
+/**
+ * Create a diff against the current version
+ */
+$diff = $page->previousVersion()->diff();
+
+
+/**
+ * Create a diff against a specific version
+ */
+$diff = $page->currentVersion()->diff( $version );
+```
+
+The result will be an associative array containing the attribute name as the key, and the different attribute value.
+
 <a name="revert" />
 ### Revert to a previous version
 
@@ -119,6 +143,7 @@ You can also revert to a specific version ID of a model using:
 ```php
 $revertedModel = Version::find( $version_id )->revert();
 ```
+
 
 
 <a name="license" />

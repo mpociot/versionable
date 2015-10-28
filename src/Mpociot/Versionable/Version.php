@@ -73,4 +73,31 @@ class Version extends Eloquent
         return $model;
     }
 
+    /**
+     * Diff the attributes of this version model against another version.
+     * If no version is provided, it will be diffed against the current version.
+     *
+     * @param Version|null $againstVersion
+     * @return array
+     */
+    public function diff(Version $againstVersion = null)
+    {
+        $model = $this->getModel();
+        $diff  = $againstVersion ? $againstVersion->getModel() : $this->versionable()->withTrashed()->first()->currentVersion()->getModel();
+
+        $diffArray = array_diff($diff->getAttributes(), $model->getAttributes());
+
+        if (isset( $diffArray[ $model->getCreatedAtColumn() ] )) {
+            unset( $diffArray[ $model->getCreatedAtColumn() ] );
+        }
+        if (isset( $diffArray[ $model->getUpdatedAtColumn() ] )) {
+            unset( $diffArray[ $model->getUpdatedAtColumn() ] );
+        }
+        if (method_exists($model, 'getDeletedAtColumn') && isset( $diffArray[ $model->getDeletedAtColumn() ] )) {
+            unset( $diffArray[ $model->getDeletedAtColumn() ] );
+        }
+
+        return $diffArray;
+    }
+
 }

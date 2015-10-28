@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Mockery as m;
@@ -383,6 +384,92 @@ class VersionableTest extends VersionableTestCase
         $this->assertNotNull( $user->deleted_at );
 
         $this->assertCount( 1 , $user->versions );
+    }
+
+    public function testDiffTwoVersions()
+    {
+        Auth::shouldReceive('check')
+            ->andReturn( false );
+
+        $user = new TestVersionableUser();
+        $user->name = "Marcel";
+        $user->email = "m.pociot@test.php";
+        $user->password = "12345";
+        $user->last_login = $user->freshTimestamp();
+        $user->save();
+        sleep(1);
+
+        $user->name = "John";
+        $user->save();
+
+        $diff = $user->previousVersion()->diff();
+        $this->assertTrue( is_array($diff) );
+
+        $this->assertCount(1, $diff);
+        $this->assertEquals( "John", $diff["name"] );
+    }
+
+    public function testDiffIgnoresTimestamps()
+    {
+        Auth::shouldReceive('check')
+            ->andReturn( false );
+
+        $user = new TestVersionableSoftDeleteUser();
+        $user->name = "Marcel";
+        $user->email = "m.pociot@test.php";
+        $user->password = "12345";
+        $user->last_login = $user->freshTimestamp();
+        $user->save();
+        sleep(1);
+
+        $user->name = "John";
+        $user->created_at = Carbon::now();
+        $user->updated_at = Carbon::now();
+        $user->deleted_at = Carbon::now();
+        $user->save();
+
+        $diff = $user->previousVersion()->diff();
+        $this->assertTrue( is_array($diff) );
+
+        $this->assertCount(1, $diff);
+        $this->assertEquals( "John", $diff["name"] );
+    }
+
+    public function testDiffSpecificVersions()
+    {
+        Auth::shouldReceive('check')
+            ->andReturn( false );
+
+        // Create 3 versions
+        $user = new TestVersionableSoftDeleteUser();
+        $user->name = "Marcel";
+        $user->email = "m.pociot@test.php";
+        $user->password = "12345";
+        $user->last_login = $user->freshTimestamp();
+        $user->save();
+        sleep(1);
+
+        $user->name = "John";
+        $user->email = "john@snow.com";
+        $user->save();
+        sleep(1);
+
+        $user->name = "Julia";
+        $user->save();
+
+        $diff = $user->currentVersion()->diff( $user->versions()->orderBy("version_id","ASC")->first() );
+        $this->assertTrue( is_array($diff) );
+
+        $this->assertCount(2, $diff);
+        $this->assertEquals( "Marcel", $diff["name"] );
+        $this->assertEquals( "m.pociot@test.php", $diff["email"] );
+
+
+        $diff = $user->currentVersion()->diff( $user->versions()->orderBy("version_id","ASC")->offset(1)->first() );
+        $this->assertTrue( is_array($diff) );
+
+        $this->assertCount(1, $diff);
+        $this->assertEquals( "John", $diff["name"] );
     }
 
 
