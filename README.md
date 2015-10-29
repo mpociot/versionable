@@ -29,7 +29,6 @@ $oldModel = Version::find(100)->getModel();
     - [Retrieving all versions associated to a model](#retrieve)
     - [Getting a diff of two versions](#diff)
     - [Revert to a previous version](#revert)
-- [FAQ](#faq) 
 - [License](#license) 
 
 <a name="installation" />
