@@ -85,7 +85,7 @@ class Version extends Eloquent
         $model = $this->getModel();
         $diff  = $againstVersion ? $againstVersion->getModel() : $this->versionable()->withTrashed()->first()->currentVersion()->getModel();
 
-        $diffArray = array_diff($diff->getAttributes(), $model->getAttributes());
+        $diffArray = array_diff_assoc($diff->getAttributes(), $model->getAttributes());
 
         if (isset( $diffArray[ $model->getCreatedAtColumn() ] )) {
             unset( $diffArray[ $model->getCreatedAtColumn() ] );
