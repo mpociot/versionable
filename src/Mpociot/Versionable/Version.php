@@ -37,7 +37,7 @@ class Version extends Eloquent
      */
     public function getResponsibleUserAttribute()
     {
-        $model = app('config')->get("auth.model");
+        $model = config("auth.model");
         return $model::find($this->user_id);
     }
 
