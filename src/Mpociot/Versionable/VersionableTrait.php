@@ -185,7 +185,7 @@ trait VersionableTrait
     /**
      * @return int|null
      */
-    private function getAuthUserId()
+    protected function getAuthUserId()
     {
         if (Auth::check()) {
             return Auth::id();
