@@ -62,9 +62,9 @@ class Content extends Model {
 ```
 That's it!
 
-Every time you update your model, a new version containing the previous attributes will be stores in your database. 
+Every time you update your model, a new version containing the previous attributes will be stored in your database. 
 
-All timestamps and the possible soft-delete timestamp will be ignored.
+All timestamps and the optional soft-delete timestamp will be ignored.
 
 <a name="exclude" />
 ### Exclude attributes from versioning
@@ -129,7 +129,7 @@ There are multiple ways to do this.
 
 **Revert to the previous version**
 
-You can easiliy revert to the version prior to the currently active version using:
+You can easily revert to the version prior to the currently active version using:
 
 ```php
 $content->previousVersion()->revert();
