@@ -30,7 +30,7 @@ class ChangeVersionableIdAndTypeFields extends Migration {
 		Schema::table('versions', function(Blueprint $table)
 		{
 			$table->integer('versionable_id')->change();
-            $table->text('versionable_type')->change();
+			$table->text('versionable_type')->change();
 			$table->dropIndex('versions_versionable_id_index');
 		});
 	}
