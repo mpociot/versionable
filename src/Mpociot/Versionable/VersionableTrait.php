@@ -78,6 +78,7 @@ trait VersionableTrait
         static::saved(function ($model) {
             $model->versionablePostSave();
         });
+
     }
 
     /**
@@ -146,8 +147,8 @@ trait VersionableTrait
          * We'll save new versions on updating and first creation
          */
         if (
-            ($this->versioningEnabled === true && $this->updating && $this->isValidForVersioning()) ||
-            ($this->versioningEnabled === true && !$this->updating)
+            ( $this->versioningEnabled === true && $this->updating && $this->isValidForVersioning() ) ||
+            ( $this->versioningEnabled === true && !$this->updating )
         ) {
             // Save a new version
             $version                   = new Version();
@@ -156,7 +157,7 @@ trait VersionableTrait
             $version->user_id          = $this->getAuthUserId();
             $version->model_data       = serialize($this->getAttributes());
 
-            if (!empty($this->reason)) {
+            if (!empty( $this->reason )) {
                 $version->reason = $this->reason;
             }
 
@@ -171,14 +172,14 @@ trait VersionableTrait
      */
     private function isValidForVersioning()
     {
-        $dontVersionFields = isset($this->dontVersionFields) ? $this->dontVersionFields : [];
+        $dontVersionFields = isset( $this->dontVersionFields ) ? $this->dontVersionFields : [];
         $removeableKeys    = array_merge($dontVersionFields, [$this->getUpdatedAtColumn()]);
 
         if (method_exists($this, 'getDeletedAtColumn')) {
             $removeableKeys[] = $this->getDeletedAtColumn();
         }
 
-        return (count(array_diff_key($this->versionableDirtyData, array_flip($removeableKeys))) > 0);
+        return ( count(array_diff_key($this->versionableDirtyData, array_flip($removeableKeys))) > 0 );
     }
 
     /**
@@ -199,4 +200,6 @@ trait VersionableTrait
         }
         return null;
     }
+
+
 }
