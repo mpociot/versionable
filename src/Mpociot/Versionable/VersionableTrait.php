@@ -194,7 +194,7 @@ trait VersionableTrait
             ) {
                 return ($class::check()) ? $class::getUser()->id : null;
             } elseif (Auth::check()) {
-                return Auth::user()->getAuthIdentifier();
+                return Auth::id();
             }
         } catch (Exception $e) {
             return null;
