@@ -78,7 +78,6 @@ trait VersionableTrait
         static::saved(function ($model) {
             $model->versionablePostSave();
         });
-
     }
 
     /**
@@ -147,8 +146,8 @@ trait VersionableTrait
          * We'll save new versions on updating and first creation
          */
         if (
-            ( $this->versioningEnabled === true && $this->updating && $this->isValidForVersioning() ) ||
-            ( $this->versioningEnabled === true && !$this->updating )
+            ($this->versioningEnabled === true && $this->updating && $this->isValidForVersioning()) ||
+            ($this->versioningEnabled === true && !$this->updating)
         ) {
             // Save a new version
             $version                   = new Version();
@@ -157,7 +156,7 @@ trait VersionableTrait
             $version->user_id          = $this->getAuthUserId();
             $version->model_data       = serialize($this->getAttributes());
 
-            if (!empty( $this->reason )) {
+            if (!empty($this->reason)) {
                 $version->reason = $this->reason;
             }
 
@@ -172,26 +171,32 @@ trait VersionableTrait
      */
     private function isValidForVersioning()
     {
-        $dontVersionFields = isset( $this->dontVersionFields ) ? $this->dontVersionFields : [];
+        $dontVersionFields = isset($this->dontVersionFields) ? $this->dontVersionFields : [];
         $removeableKeys    = array_merge($dontVersionFields, [$this->getUpdatedAtColumn()]);
 
         if (method_exists($this, 'getDeletedAtColumn')) {
             $removeableKeys[] = $this->getDeletedAtColumn();
         }
 
-        return ( count(array_diff_key($this->versionableDirtyData, array_flip($removeableKeys))) > 0 );
+        return (count(array_diff_key($this->versionableDirtyData, array_flip($removeableKeys))) > 0);
     }
 
     /**
      * @return int|null
      */
-    private function getAuthUserId()
+    protected function getAuthUserId()
     {
-        if (Auth::check()) {
-            return Auth::id();
+        try {
+            if (class_exists($class = '\Cartalyst\Sentry\Facades\Laravel\Sentry')
+                || class_exists($class = '\Cartalyst\Sentinel\Laravel\Facades\Sentinel')
+            ) {
+                return ($class::check()) ? $class::getUser()->id : null;
+            } elseif (\Auth::check()) {
+                return \Auth::user()->getAuthIdentifier();
+            }
+        } catch (\Exception $e) {
+            return null;
         }
         return null;
     }
-
-
 }
