@@ -148,7 +148,7 @@ trait VersionableTrait
          */
         if (
             ( $this->versioningEnabled === true && $this->updating && $this->isValidForVersioning() ) ||
-            ( $this->versioningEnabled === true && !$this->updating )
+            ( $this->versioningEnabled === true && !$this->updating && count($this->versionableDirtyData))
         ) {
             // Save a new version
             $version                   = new Version();
