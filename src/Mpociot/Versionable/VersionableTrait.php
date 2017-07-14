@@ -111,7 +111,8 @@ trait VersionableTrait
      */
     public function currentVersion()
     {
-        return $this->versions()->orderBy( $this->getVersionClass()::CREATED_AT, 'DESC')->first();
+        $class = $this->getVersionClass();
+        return $this->versions()->orderBy( $class::CREATED_AT, 'DESC')->first();
     }
 
     /**
@@ -120,7 +121,8 @@ trait VersionableTrait
      */
     public function previousVersion()
     {
-        return $this->versions()->orderBy( $this->getVersionClass()::CREATED_AT, 'DESC')->limit(1)->offset(1)->first();
+        $class = $this->getVersionClass();
+        return $this->versions()->orderBy( $class::CREATED_AT, 'DESC')->limit(1)->offset(1)->first();
     }
 
     /**
@@ -166,7 +168,7 @@ trait VersionableTrait
             ( $this->versioningEnabled === true && !$this->updating && count($this->versionableDirtyData))
         ) {
             // Save a new version
-            $class = $this->getVersionClass();
+            $class                     = $this->getVersionClass();
             $version                   = new $class();
             $version->versionable_id   = $this->getKey();
             $version->versionable_type = get_class($this);
