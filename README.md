@@ -19,7 +19,6 @@ $content->previousVersion()->revert();
 $oldModel = Version::find(100)->getModel();
 ```
 
-
 ## Contents
 
 - [Installation](#installation)
@@ -32,6 +31,7 @@ $oldModel = Version::find(100)->getModel();
 - [License](#license) 
 
 <a name="installation" />
+
 ## Installation
 
 In order to add Versionable to your project, just add 
@@ -49,6 +49,7 @@ php artisan migrate --path=vendor/mpociot/versionable/src/migrations
 ```
 
 <a name="usage" />
+
 ## Usage
 
 Let the Models you want to set under version control use the `VersionableTrait`.
@@ -67,6 +68,7 @@ Every time you update your model, a new version containing the previous attribut
 All timestamps and the optional soft-delete timestamp will be ignored.
 
 <a name="exclude" />
+
 ### Exclude attributes from versioning
 
 Sometimes you don't want to create a version *every* time an attribute on your model changes. For example your User model might have a `last_login_at` attribute. 
@@ -88,6 +90,7 @@ class User extends Model {
 ```
 
 <a name="retrieve" />
+
 ### Retrieving all versions associated to a model
 
 To retrieve all stored versions use the `versions` attribute on your model.
@@ -99,6 +102,7 @@ $model->versions;
 ```
 
 <a name="diff" />
+
 ### Getting a diff of two versions
 
 If you want to know, what exactly has changed between two versions, use the version model's `diff` method.
@@ -121,6 +125,7 @@ $diff = $page->currentVersion()->diff( $version );
 The result will be an associative array containing the attribute name as the key, and the different attribute value.
 
 <a name="revert" />
+
 ### Revert to a previous version
 
 Saving versions is pretty cool, but the real benefit will be the ability to revert to a specific version.
@@ -146,6 +151,7 @@ $revertedModel = Version::find( $version_id )->revert();
 
 
 <a name="license" />
+
 ## License
 
-Versionable is free software distributed under the terms of the MIT license.
+Versionable is free software distributed under the terms of the [MIT license](https://opensource.org/licenses/MIT).
