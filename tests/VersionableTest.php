@@ -538,14 +538,15 @@ class TestPartialVersionableUser extends Illuminate\Database\Eloquent\Model {
 
 class DynamicVersionModel extends Version
 {
-    public const TABLENAME = 'other_versions';
+    const TABLENAME = 'other_versions';
     public $table = self::TABLENAME ;
 }
 class ModelWithDynamicVersion extends Model
 {
-	public const TABLENAME = 'some_data';
-	public $table = self::TABLENAME ;
-	//use DynamicVersionModelTrait;
-	use VersionableTrait ;
-	protected $versionClass = DynamicVersionModel::class ;
+    const TABLENAME = 'some_data';
+    public $table = self::TABLENAME ;
+    //use DynamicVersionModelTrait;
+    use VersionableTrait ;
+    protected $versionClass = DynamicVersionModel::class ;
 }
+
