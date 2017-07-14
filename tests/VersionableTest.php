@@ -4,6 +4,9 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Mockery as m;
+use Illuminate\Database\Eloquent\Model;
+use Mpociot\Versionable\Version;
+use Mpociot\Versionable\VersionableTrait;
 
 class VersionableTest extends VersionableTestCase
 {
@@ -472,7 +475,39 @@ class VersionableTest extends VersionableTestCase
         $this->assertEquals( "John", $diff["name"] );
     }
 
+    public function testDynamicVersionModel()
+    {
+        Auth::shouldReceive('check')
+            ->andReturn( false );
 
+        $name_v1 = 'first' ;
+        $name_v2 = 'second' ;
+        $name_v3 = 'thrid' ;
+        $model = new ModelWithDynamicVersion();
+    	$model->name = $name_v1 ;
+    	$model->save();
+    	$model->name = $name_v2 ;
+    	$model->save();
+    	// Create a third version because previousVersion()->revert() is buggy if only 2 versions exist.
+    	$model->name = $name_v3 ;
+    	$model->save();
+
+    	// Assert that no row in default Version table
+    	$this->assertEquals( 0, Version::all()->count() );
+    	// But are in Custom version table
+    	$this->assertEquals( 3, DynamicVersionModel::all()->count() );
+
+    	// Assert that some versions exist
+    	$this->assertEquals( 3, $model->versions->count() );
+    	$this->assertEquals( $name_v3, $model->name );
+    	$this->assertArrayHasKey( 'name', $model->previousVersion()->diff());
+
+        // Test the revert
+        $model = $model->previousVersion()->revert();
+
+        $this->assertEquals( $name_v2, $model->name );
+    }
+ 
 }
 
 
@@ -498,4 +533,19 @@ class TestPartialVersionableUser extends Illuminate\Database\Eloquent\Model {
     protected $table = "users";
 
     protected $dontVersionFields = ["last_login"];
+}
+
+
+class DynamicVersionModel extends Version
+{
+    public const TABLENAME = 'other_versions';
+    public $table = self::TABLENAME ;
+}
+class ModelWithDynamicVersion extends Model
+{
+	public const TABLENAME = 'some_data';
+	public $table = self::TABLENAME ;
+	//use DynamicVersionModelTrait;
+	use VersionableTrait ;
+	protected $versionClass = DynamicVersionModel::class ;
 }

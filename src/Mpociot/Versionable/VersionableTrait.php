@@ -12,6 +12,21 @@ trait VersionableTrait
 {
 
     /**
+     * Retrieve, if exists, the property that define that Version model.
+     * If no property defined, use the default Version model.
+     * 
+     * Trait cannot share properties whth their class !
+     * http://php.net/manual/en/language.oop5.traits.php
+     * @return unknown|string
+     */
+    protected function getVersionClass()
+    {
+        if( property_exists( self::class, 'versionClass') )
+            return $this->versionClass ;
+        return Version::class ;
+    }
+
+    /**
      * Private variable to detect if this is an update
      * or an insert
      * @var bool
@@ -87,7 +102,7 @@ trait VersionableTrait
      */
     public function versions()
     {
-        return $this->morphMany(Version::class, 'versionable');
+        return $this->morphMany( $this->getVersionClass(), 'versionable');
     }
 
     /**
@@ -96,7 +111,7 @@ trait VersionableTrait
      */
     public function currentVersion()
     {
-        return $this->versions()->orderBy(Version::CREATED_AT, 'DESC')->first();
+        return $this->versions()->orderBy( $this->getVersionClass()::CREATED_AT, 'DESC')->first();
     }
 
     /**
@@ -105,7 +120,7 @@ trait VersionableTrait
      */
     public function previousVersion()
     {
-        return $this->versions()->orderBy(Version::CREATED_AT, 'DESC')->limit(1)->offset(1)->first();
+        return $this->versions()->orderBy( $this->getVersionClass()::CREATED_AT, 'DESC')->limit(1)->offset(1)->first();
     }
 
     /**
@@ -151,7 +166,8 @@ trait VersionableTrait
             ( $this->versioningEnabled === true && !$this->updating && count($this->versionableDirtyData))
         ) {
             // Save a new version
-            $version                   = new Version();
+            $class = $this->getVersionClass();
+            $version                   = new $class();
             $version->versionable_id   = $this->getKey();
             $version->versionable_type = get_class($this);
             $version->user_id          = $this->getAuthUserId();
