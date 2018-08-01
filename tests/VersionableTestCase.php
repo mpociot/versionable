@@ -27,6 +27,17 @@ abstract class VersionableTestCase extends PHPUnit_Framework_TestCase
         $db->setAsGlobal();
     }
 
+    protected function createVersionTable($table)
+    {
+    	$table->increments('version_id');
+    	$table->integer('versionable_id');
+    	$table->text('versionable_type');
+    	$table->integer('user_id')->nullable();
+    	$table->binary('model_data');
+    	$table->string('reason', 100)->nullable();
+    	$table->timestamps();
+    }
+
     public function migrateUsersTable()
     {
         DB::schema()->create('users', function ($table) {
@@ -39,14 +50,21 @@ abstract class VersionableTestCase extends PHPUnit_Framework_TestCase
             $table->softDeletes();
         });
 
-        DB::schema()->create('versions', function ($table) {
-            $table->increments('version_id');
-            $table->integer('versionable_id');
-            $table->text('versionable_type');
-            $table->integer('user_id')->nullable();
-            $table->binary('model_data');
-            $table->string('reason', 100)->nullable();
-            $table->timestamps();
+        $that = $this ;
+
+        DB::schema()->create('versions', function ($table) use ($that) {
+            $that->createVersionTable($table);
         });
+
+        DB::schema()->create(DynamicVersionModel::TABLENAME, function ($table) use ($that) {
+       	    $that->createVersionTable($table);
+       	});
+
+        DB::schema()->create( ModelWithDynamicVersion::TABLENAME, function ($table) {
+            $table->increments('id');
+            $table->text('name');
+     	    $table->timestamps();
+        });
+
     }
 }

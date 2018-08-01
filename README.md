@@ -28,6 +28,7 @@ $oldModel = Version::find(100)->getModel();
     - [Retrieving all versions associated to a model](#retrieve)
     - [Getting a diff of two versions](#diff)
     - [Revert to a previous version](#revert)
+    - [Use different version table](#differentVersionTable)
 - [License](#license) 
 
 <a name="installation" />
@@ -146,9 +147,38 @@ You can also revert to a specific version ID of a model using:
 
 ```php
 $revertedModel = Version::find( $version_id )->revert();
+
+```
+<a name="differentVersionTable" />
+
+### Use different version table
+
+Some times we want to have models versions in differents tables. By default versions are stored in the table 'versions', defined in Mpociot\Versionable\Version::$table.
+
+To use a different table to store version for some model we have to change the table name. To do so, create a model that extends Mpociot\Versionable\Version and set the $table property to another table name.
+
+```php
+class MyModelVersion extends Version
+{
+    $table = 'mymodel_versions';
+    ...
+}
+
 ```
 
+In the model that you want it use this specific versions table, use the `VersionableTrait` Trait and add the property `$versionClass` with value the specific version model.
+ 
+```php
+class MyModel extends Eloquent
+{
+    use VersionableTrait ;
+    protected $versionClass = MyModelVersion::class ;
+    ... 
+}
 
+```
+
+And do not forget to create a migration for this versions table, exactly as the default versions table.
 
 <a name="license" />
 
