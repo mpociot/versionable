@@ -1,6 +1,7 @@
 <?php
 namespace Mpociot\Versionable;
 
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
@@ -185,10 +186,18 @@ trait VersionableTrait
     /**
      * @return int|null
      */
-    private function getAuthUserId()
+    protected function getAuthUserId()
     {
-        if (Auth::check()) {
-            return Auth::id();
+        try {
+            if (class_exists($class = '\Cartalyst\Sentry\Facades\Laravel\Sentry')
+                || class_exists($class = '\Cartalyst\Sentinel\Laravel\Facades\Sentinel')
+            ) {
+                return ($class::check()) ? $class::getUser()->id : null;
+            } elseif (Auth::check()) {
+                return Auth::id();
+            }
+        } catch (Exception $e) {
+            return null;
         }
         return null;
     }
