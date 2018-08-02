@@ -161,7 +161,7 @@ class VersionableTest extends VersionableTestCase
 
         Config::shouldReceive('get')
             ->once()
-            ->with("providers.users.model")
+            ->with("auth.providers.users.model")
             ->andReturn('TestVersionableUser');
 
         $user = new TestVersionableUser();
