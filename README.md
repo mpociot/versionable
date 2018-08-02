@@ -10,7 +10,6 @@
 
 Keep track of all your model changes and revert to previous versions of it.
 
-
 ```php
 // Restore to the previous change
 $content->previousVersion()->revert();
@@ -149,6 +148,25 @@ You can also revert to a specific version ID of a model using:
 $revertedModel = Version::find( $version_id )->revert();
 
 ```
+
+<a name="disableVersioning" />
+
+### Disable versioning
+
+In some situations you might want to disable versioning a specific model completely for the current request.
+
+You can do this by using the `disableVersioning` and `enableVersioning` methods on the versionable model.
+
+```php
+$user = User::find(1);
+$user->disableVersioning();
+
+// This will not create a new version entry.
+$user->update([
+    'some_attribute' => 'changed value'
+]);
+```
+
 <a name="differentVersionTable" />
 
 ### Use different version table
