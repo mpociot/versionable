@@ -122,7 +122,7 @@ trait VersionableTrait
     public function previousVersion()
     {
         $class = $this->getVersionClass();
-        return $this->versions()->orderBy( $class::CREATED_AT, 'DESC')->limit(1)->offset(1)->first();
+        return $this->versions()->latest()->limit(1)->offset(1)->first();
     }
 
     /**
@@ -180,6 +180,30 @@ trait VersionableTrait
             }
 
             $version->save();
+
+            $this->purgeOldVersions();
+        }
+    }
+
+    /**
+     * Delete old versions of this model when the reach a specific count.
+     * 
+     * @return void
+     */
+    private function purgeOldVersions()
+    {
+        $keep = isset($this->keepOldVersions) ? $this->keepOldVersions : 0;
+        $count = $this->versions()->count();
+
+        if ((int)$keep > 0 && $count > $keep) {
+            $oldVersions = $this->versions()
+                ->latest()
+                ->take($count)
+                ->skip($keep)
+                ->get()
+                ->each(function ($version) {
+                $version->delete();
+            });
         }
     }
 

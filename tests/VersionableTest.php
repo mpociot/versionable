@@ -484,29 +484,73 @@ class VersionableTest extends VersionableTestCase
         $name_v2 = 'second' ;
         
         $model = new ModelWithDynamicVersion();
-    	$model->name = $name_v1 ;
-    	$model->save();
-    	
+        $model->name = $name_v1 ;
+        $model->save();
+        
         sleep(1);
 
         $model->name = $name_v2 ;
-    	$model->save();
+        $model->save();
 
-    	// Assert that no row in default Version table
-    	$this->assertEquals( 0, Version::all()->count() );
+        // Assert that no row in default Version table
+        $this->assertEquals( 0, Version::all()->count() );
         
-    	// But are in Custom version table
-    	$this->assertEquals( 2, DynamicVersionModel::all()->count() );
+        // But are in Custom version table
+        $this->assertEquals( 2, DynamicVersionModel::all()->count() );
 
-    	// Assert that some versions exist
-    	$this->assertEquals( 2, $model->versions->count() );
-    	$this->assertEquals( $name_v2, $model->name );
-    	$this->assertArrayHasKey( 'name', $model->previousVersion()->diff());
+        // Assert that some versions exist
+        $this->assertEquals( 2, $model->versions->count() );
+        $this->assertEquals( $name_v2, $model->name );
+        $this->assertArrayHasKey( 'name', $model->previousVersion()->diff());
 
         // Test the revert
         $model = $model->previousVersion()->revert();
 
         $this->assertEquals( $name_v1, $model->name );
+    }
+
+    public function testKeepMaxVersionCount()
+    {
+        Auth::shouldReceive('check')
+            ->andReturn( false );
+
+        $name_v1 = 'first' ;
+        $name_v2 = 'second' ;
+        $name_v3 = 'third' ;
+        $name_v4 = 'fourth' ;
+        
+        $model = new ModelWithMaxVersions();
+        $model->email = "m.pociot@test.php";
+        $model->password = "foo";
+        $model->name = $name_v1 ;
+        $model->save();
+        
+        sleep(1);
+
+        $model->name = $name_v2 ;
+        $model->save();
+        
+        sleep(1);
+
+        $model->name = $name_v3 ;
+        $model->save();
+        
+        sleep(1);
+
+        $model->name = $name_v4 ;
+        $model->save();
+
+        // We limit the versions to only keep the latest one.
+        $this->assertEquals( 2, Version::all()->count() );
+
+        $this->assertEquals( 2, $model->versions()->count() );
+
+        $this->assertArrayHasKey( 'name', $model->previousVersion()->diff());
+
+        // Test the revert
+        $model = $model->previousVersion()->revert();
+
+        $this->assertEquals( $name_v3, $model->name );
     }
  
 }
@@ -527,6 +571,13 @@ class TestVersionableSoftDeleteUser extends Illuminate\Database\Eloquent\Model {
     protected $table = "users";
 }
 
+class ModelWithMaxVersions extends Illuminate\Database\Eloquent\Model {
+    use \Mpociot\Versionable\VersionableTrait;
+
+    protected $table = "users";
+
+    protected $keepOldVersions = 2;
+}
 
 class TestPartialVersionableUser extends Illuminate\Database\Eloquent\Model {
     use \Mpociot\Versionable\VersionableTrait;

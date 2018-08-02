@@ -24,9 +24,11 @@ $oldModel = Version::find(100)->getModel();
 - [Implementation](#implementation)
 - [Usage](#usage)
     - [Exclude attributes from versioning](#exclude)
+    - [Maximum stored versions](#maximum)
     - [Retrieving all versions associated to a model](#retrieve)
     - [Getting a diff of two versions](#diff)
     - [Revert to a previous version](#revert)
+    - [Disable versioning for specific requests](#disableVersioning)
     - [Use different version table](#differentVersionTable)
 - [License](#license) 
 
@@ -85,6 +87,26 @@ class User extends Model {
 	 * @var array
 	 */
 	protected $dontVersionFields = [ 'last_login_at' ];
+
+}
+```
+
+<a name="maximum" />
+
+### Maximum number of stored versions
+
+You can control the maximum number of stored versions per model. By default, there will be no limit and all versions will be saved.
+Depending on your application, this could lead to a lot of versions, so you might want to limit the amount of stored versions.
+
+You can do this by setting a `$keepOldVersions` property on your versionable models:
+
+```php
+class User {
+
+    use VersionableTrait;
+
+    // Keep the last 10 versions.
+    protected $keepOldVersions = 10;
 
 }
 ```
