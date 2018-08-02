@@ -482,30 +482,31 @@ class VersionableTest extends VersionableTestCase
 
         $name_v1 = 'first' ;
         $name_v2 = 'second' ;
-        $name_v3 = 'thrid' ;
+        
         $model = new ModelWithDynamicVersion();
     	$model->name = $name_v1 ;
     	$model->save();
-    	$model->name = $name_v2 ;
-    	$model->save();
-    	// Create a third version because previousVersion()->revert() is buggy if only 2 versions exist.
-    	$model->name = $name_v3 ;
+    	
+        sleep(1);
+
+        $model->name = $name_v2 ;
     	$model->save();
 
     	// Assert that no row in default Version table
     	$this->assertEquals( 0, Version::all()->count() );
+        
     	// But are in Custom version table
-    	$this->assertEquals( 3, DynamicVersionModel::all()->count() );
+    	$this->assertEquals( 2, DynamicVersionModel::all()->count() );
 
     	// Assert that some versions exist
-    	$this->assertEquals( 3, $model->versions->count() );
-    	$this->assertEquals( $name_v3, $model->name );
+    	$this->assertEquals( 2, $model->versions->count() );
+    	$this->assertEquals( $name_v2, $model->name );
     	$this->assertArrayHasKey( 'name', $model->previousVersion()->diff());
 
         // Test the revert
         $model = $model->previousVersion()->revert();
 
-        $this->assertEquals( $name_v2, $model->name );
+        $this->assertEquals( $name_v1, $model->name );
     }
  
 }

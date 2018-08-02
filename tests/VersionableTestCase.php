@@ -29,13 +29,14 @@ abstract class VersionableTestCase extends PHPUnit_Framework_TestCase
 
     protected function createVersionTable($table)
     {
-    	$table->increments('version_id');
-    	$table->integer('versionable_id');
-    	$table->text('versionable_type');
-    	$table->integer('user_id')->nullable();
-    	$table->binary('model_data');
-    	$table->string('reason', 100)->nullable();
-    	$table->timestamps();
+        $table->increments('version_id');
+        $table->string('versionable_id');
+        $table->string('versionable_type');
+        $table->string('user_id')->nullable();
+        $table->binary('model_data');
+        $table->string('reason', 100)->nullable();
+        $table->index('versionable_id');
+        $table->timestamps();
     }
 
     public function migrateUsersTable()

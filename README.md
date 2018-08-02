@@ -1,5 +1,5 @@
 # Versionable
-## Easy to use Model versioning for Laravel 4 and Laravel 5
+## Easy to use Model versioning for Laravel
 
 ![image](http://img.shields.io/packagist/v/mpociot/versionable.svg?style=flat)
 ![image](http://img.shields.io/packagist/l/mpociot/versionable.svg?style=flat)
