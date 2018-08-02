@@ -18,20 +18,6 @@ $content->previousVersion()->revert();
 $oldModel = Version::find(100)->getModel();
 ```
 
-## Contents
-
-- [Installation](#installation)
-- [Implementation](#implementation)
-- [Usage](#usage)
-    - [Exclude attributes from versioning](#exclude)
-    - [Maximum stored versions](#maximum)
-    - [Retrieving all versions associated to a model](#retrieve)
-    - [Getting a diff of two versions](#diff)
-    - [Revert to a previous version](#revert)
-    - [Disable versioning for specific requests](#disableVersioning)
-    - [Use different version table](#differentVersionTable)
-- [License](#license) 
-
 <a name="installation" />
 
 ## Installation
