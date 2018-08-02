@@ -36,7 +36,7 @@ $oldModel = Version::find(100)->getModel();
 
 In order to add Versionable to your project, just add 
 
-    "mpociot/versionable": "~2.0"
+    "mpociot/versionable": "~3.0"
 
 to your composer.json. Then run `composer install` or `composer update`.
 
