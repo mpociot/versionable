@@ -1,6 +1,6 @@
 <?php
 
-namespace Mpociot\Versionable\Providers\ServiceProvider;
+namespace Mpociot\Versionable\Providers;
 
 use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
 
