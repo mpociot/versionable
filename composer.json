@@ -2,7 +2,14 @@
     "name": "mpociot/versionable",
     "license": "MIT",
     "description": "Allows to create Laravel 4 / 5 Model versioning and restoring",
-    "keywords": ["model", "laravel", "ardent", "version", "history", "restore"],
+    "keywords": [
+        "model",
+        "laravel",
+        "ardent",
+        "version",
+        "history",
+        "restore"
+    ],
     "homepage": "http://github.com/mpociot/versionable",
     "authors": [
         {
@@ -35,5 +42,12 @@
     },
     "scripts": {
         "test": "phpunit"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Mpociot\\Versionable\\Providers\\ServiceProvider"
+            ]
+        }
     }
 }
