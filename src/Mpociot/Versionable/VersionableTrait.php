@@ -172,6 +172,7 @@ trait VersionableTrait
             // Save a new version
             $class                     = $this->getVersionClass();
             $version                   = new $class();
+            $version->setConnection($this->getConnection()->getName());
             $version->versionable_id   = $this->getKey();
             $version->versionable_type = get_class($this);
             $version->user_id          = $this->getAuthUserId();
