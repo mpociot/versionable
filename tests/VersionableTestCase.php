@@ -1,47 +1,45 @@
 <?php
 
-use Illuminate\Container\Container;
-use Illuminate\Database\Capsule\Manager as DB;
-use Illuminate\Events\Dispatcher;
-
-abstract class VersionableTestCase extends PHPUnit_Framework_TestCase
+abstract class VersionableTestCase extends \Orchestra\Testbench\TestCase
 {
     public function setUp()
     {
-        $this->configureDatabase();
+        parent::setUp();
+
+        $this->setUpDatabase();
+
         $this->migrateUsersTable();
     }
 
-    protected function configureDatabase()
+    protected function getEnvironmentSetUp($app)
     {
-        $db = new DB;
-        $db->addConnection(array(
-            'driver'    => 'sqlite',
-            'database'  => ':memory:',
-            'charset'   => 'utf8',
-            'collation' => 'utf8_unicode_ci',
-            'prefix'    => '',
-        ));
-        $db->setEventDispatcher(new Dispatcher(new Container));
-        $db->bootEloquent();
-        $db->setAsGlobal();
+        $app['config']->set('auth.providers.users.model', TestVersionableUser::class);
+        $app['config']->set('database.default', 'sqlite');
+        $app['config']->set('database.connections.sqlite', [
+            'driver' => 'sqlite',
+            'database' => ':memory:',
+            'prefix' => '',
+        ]);
+        $app['config']->set('app.key', 'base64:6Cu/ozj4gPtIjmXjr8EdVnGFNsdRqZfHfVjQkmTlg4Y=');
     }
 
-    protected function createVersionTable($table)
+    protected function setUpDatabase()
     {
-        $table->increments('version_id');
-        $table->string('versionable_id');
-        $table->string('versionable_type');
-        $table->string('user_id')->nullable();
-        $table->binary('model_data');
-        $table->string('reason', 100)->nullable();
-        $table->index('versionable_id');
-        $table->timestamps();
+        include_once __DIR__ . '/../src/migrations/2014_09_27_212641_create_versions_table.php';
+
+        (new \CreateVersionsTable())->up();
+    }
+
+    protected function getPackageProviders($app)
+    {
+        return [
+            \Mpociot\Versionable\Providers\ServiceProvider::class,
+        ];
     }
 
     public function migrateUsersTable()
     {
-        DB::schema()->create('users', function ($table) {
+        $this->app['db']->connection()->getSchemaBuilder()->create('users', function ($table) {
             $table->increments('id');
             $table->string('name');
             $table->string('email');
@@ -51,21 +49,21 @@ abstract class VersionableTestCase extends PHPUnit_Framework_TestCase
             $table->softDeletes();
         });
 
-        $that = $this ;
-
-        DB::schema()->create('versions', function ($table) use ($that) {
-            $that->createVersionTable($table);
-        });
-
-        DB::schema()->create(DynamicVersionModel::TABLENAME, function ($table) use ($that) {
-       	    $that->createVersionTable($table);
-       	});
-
-        DB::schema()->create( ModelWithDynamicVersion::TABLENAME, function ($table) {
+        $this->app['db']->connection()->getSchemaBuilder()->create(ModelWithDynamicVersion::TABLENAME, function ($table) {
             $table->increments('id');
             $table->text('name');
-     	    $table->timestamps();
+            $table->timestamps();
         });
 
+        $this->app['db']->connection()->getSchemaBuilder()->create(DynamicVersionModel::TABLENAME, function ($table) {
+            $table->increments('version_id');
+            $table->string('versionable_id');
+            $table->string('versionable_type');
+            $table->string('user_id')->nullable();
+            $table->binary('model_data');
+            $table->string('reason', 100)->nullable();
+            $table->index('versionable_id');
+            $table->timestamps();
+        });
     }
 }

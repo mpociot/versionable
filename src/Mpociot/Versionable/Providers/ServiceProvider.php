@@ -13,6 +13,7 @@ class ServiceProvider extends LaravelServiceProvider
      */
     public function register ()
     {
+        $this->mergeConfigFrom(__DIR__.'/../../../config/config.php', 'versionable');
     }
 
     /**
@@ -22,6 +23,11 @@ class ServiceProvider extends LaravelServiceProvider
      */
     public function boot()
     {
-        $this->loadMigrationsFrom(__DIR__ . '/../../migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/../../../migrations');
+
+
+        $this->publishes([
+            __DIR__.'/../../../config/config.php' => config_path('versionable.php'),
+        ], 'config');
     }
 }

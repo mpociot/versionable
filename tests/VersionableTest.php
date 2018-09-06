@@ -11,20 +11,6 @@ use Mpociot\Versionable\VersionableTrait;
 class VersionableTest extends VersionableTestCase
 {
 
-    public function setUp()
-    {
-        parent::setUp();
-
-        TestVersionableUser::flushEventListeners();
-        TestVersionableUser::boot();
-
-        TestVersionableSoftDeleteUser::flushEventListeners();
-        TestVersionableSoftDeleteUser::boot();
-
-        TestPartialVersionableUser::flushEventListeners();
-        TestPartialVersionableUser::boot();
-    }
-
     public function tearDown()
     {
         m::close();
@@ -33,9 +19,6 @@ class VersionableTest extends VersionableTestCase
 
     public function testVersionableRelation()
     {
-        Auth::shouldReceive('check')
-            ->andReturn( false );
-
         $user = new TestVersionableUser();
         $user->name = "Marcel";
         $user->email = "m.pociot@test.php";
@@ -49,9 +32,6 @@ class VersionableTest extends VersionableTestCase
 
     public function testInitialSaveShouldCreateVersion()
     {
-        Auth::shouldReceive('check')
-            ->andReturn( false );
-
         $user = new TestVersionableUser();
         $user->name = "Marcel";
         $user->email = "m.pociot@test.php";
@@ -64,9 +44,6 @@ class VersionableTest extends VersionableTestCase
 
     public function testRetrievePreviousVersionFails()
     {
-        Auth::shouldReceive('check')
-            ->andReturn( false );
-
         $user = new TestVersionableUser();
         $user->name = "Marcel";
         $user->email = "m.pociot@test.php";
@@ -80,9 +57,6 @@ class VersionableTest extends VersionableTestCase
 
     public function testRetrievePreviousVersionExists()
     {
-        Auth::shouldReceive('check')
-            ->andReturn( false );
-
         $user = new TestVersionableUser();
         $user->name = "Marcel";
         $user->email = "m.pociot@test.php";
@@ -103,9 +77,6 @@ class VersionableTest extends VersionableTestCase
 
     public function testVersionAndModelAreEqual()
     {
-        Auth::shouldReceive('check')
-            ->andReturn( false );
-
         $user = new TestVersionableUser();
         $user->name = "Marcel";
         $user->email = "m.pociot@test.php";
@@ -142,13 +113,6 @@ class VersionableTest extends VersionableTestCase
 
     public function testGetResponsibleUserAttribute()
     {
-        Auth::shouldReceive('check')
-            ->andReturn( true );
-
-        Auth::shouldReceive('id')
-            ->andReturn( 1 );
-
-
         $responsibleOrigUser = new TestVersionableUser();
         $responsibleOrigUser->name = "Marcel";
         $responsibleOrigUser->email = "m.pociot@test.php";
@@ -156,13 +120,10 @@ class VersionableTest extends VersionableTestCase
         $responsibleOrigUser->last_login = $responsibleOrigUser->freshTimestamp();
         $responsibleOrigUser->save();
 
+        auth()->login($responsibleOrigUser);
+
         // Needed because otherwise timestamps are exactly the same
         sleep(1);
-
-        Config::shouldReceive('get')
-            ->once()
-            ->with("auth.providers.users.model")
-            ->andReturn('TestVersionableUser');
 
         $user = new TestVersionableUser();
         $user->name = "John";
@@ -182,9 +143,6 @@ class VersionableTest extends VersionableTestCase
 
     public function testDontVersionEveryAttribute()
     {
-        Auth::shouldReceive('check')
-            ->andReturn( false );
-
         $user = new TestPartialVersionableUser();
         $user->name = "Marcel";
         $user->email = "m.pociot@test.php";
@@ -201,9 +159,6 @@ class VersionableTest extends VersionableTestCase
 
     public function testVersionEveryAttribute()
     {
-        Auth::shouldReceive('check')
-            ->andReturn( false );
-
         $user = new TestVersionableUser();
         $user->name = "Marcel";
         $user->email = "m.pociot@test.php";
@@ -219,9 +174,6 @@ class VersionableTest extends VersionableTestCase
 
     public function testCheckForVersioningEnabled()
     {
-        Auth::shouldReceive('check')
-            ->andReturn( false );
-
         $user = new TestVersionableUser();
         $user->disableVersioning();
 
@@ -246,9 +198,6 @@ class VersionableTest extends VersionableTestCase
 
     public function testCheckForVersioningEnabledLaterOn()
     {
-        Auth::shouldReceive('check')
-            ->andReturn( false );
-
         $user = new TestVersionableUser();
 
         $user->name = "Marcel";
@@ -266,9 +215,6 @@ class VersionableTest extends VersionableTestCase
 
     public function testCanRevertVersion()
     {
-        Auth::shouldReceive('check')
-            ->andReturn( false );
-
         $user = new TestVersionableUser();
 
         $user->name = "Marcel";
@@ -294,9 +240,6 @@ class VersionableTest extends VersionableTestCase
 
     public function testCanRevertSoftDeleteVersion()
     {
-        Auth::shouldReceive('check')
-            ->andReturn( false );
-
         $user = new TestVersionableSoftDeleteUser();
 
         $user->name = "Marcel";
@@ -323,9 +266,6 @@ class VersionableTest extends VersionableTestCase
 
     public function testGetVersionModel()
     {
-        Auth::shouldReceive('check')
-            ->andReturn( false );
-
         // Create 3 versions
         $user = new TestVersionableUser();
         $user->name = "Marcel";
@@ -351,9 +291,6 @@ class VersionableTest extends VersionableTestCase
 
     public function testUseReasonAttribute()
     {
-        Auth::shouldReceive('check')
-            ->andReturn( false );
-
         // Create 3 versions
         $user = new TestVersionableUser();
         $user->name = "Marcel";
@@ -368,9 +305,6 @@ class VersionableTest extends VersionableTestCase
 
     public function testIgnoreDeleteTimestamp()
     {
-        Auth::shouldReceive('check')
-            ->andReturn( false );
-
         $user = new TestVersionableSoftDeleteUser();
         $user->name = "Marcel";
         $user->email = "m.pociot@test.php";
@@ -391,8 +325,6 @@ class VersionableTest extends VersionableTestCase
 
     public function testDiffTwoVersions()
     {
-        Auth::shouldReceive('check')
-            ->andReturn( false );
 
         $user = new TestVersionableUser();
         $user->name = "Marcel";
@@ -414,9 +346,6 @@ class VersionableTest extends VersionableTestCase
 
     public function testDiffIgnoresTimestamps()
     {
-        Auth::shouldReceive('check')
-            ->andReturn( false );
-
         $user = new TestVersionableSoftDeleteUser();
         $user->name = "Marcel";
         $user->email = "m.pociot@test.php";
@@ -440,9 +369,6 @@ class VersionableTest extends VersionableTestCase
 
     public function testDiffSpecificVersions()
     {
-        Auth::shouldReceive('check')
-            ->andReturn( false );
-
         // Create 3 versions
         $user = new TestVersionableSoftDeleteUser();
         $user->name = "Marcel";
@@ -477,16 +403,13 @@ class VersionableTest extends VersionableTestCase
 
     public function testDynamicVersionModel()
     {
-        Auth::shouldReceive('check')
-            ->andReturn( false );
-
         $name_v1 = 'first' ;
         $name_v2 = 'second' ;
-        
+
         $model = new ModelWithDynamicVersion();
         $model->name = $name_v1 ;
         $model->save();
-        
+
         sleep(1);
 
         $model->name = $name_v2 ;
@@ -494,7 +417,7 @@ class VersionableTest extends VersionableTestCase
 
         // Assert that no row in default Version table
         $this->assertEquals( 0, Version::all()->count() );
-        
+
         // But are in Custom version table
         $this->assertEquals( 2, DynamicVersionModel::all()->count() );
 
@@ -509,11 +432,34 @@ class VersionableTest extends VersionableTestCase
         $this->assertEquals( $name_v1, $model->name );
     }
 
+    public function testItUsesConfigurableVersionClass()
+    {
+        $this->app['config']->set('versionable.version_model', DynamicVersionModel::class);
+
+
+        $name_v1 = 'first' ;
+        $name_v2 = 'second' ;
+
+        $model = new TestVersionableUser();
+        $model->name = $name_v1 ;
+        $model->email = $name_v1 ;
+        $model->password = $name_v1 ;
+        $model->save();
+
+        sleep(1);
+
+        $model->name = $name_v2 ;
+        $model->save();
+
+        // Assert that no row in default Version table
+        $this->assertCount(0, Version::all());
+
+        // But are in Custom version table
+        $this->assertCount(2, DynamicVersionModel::all());
+    }
+
     public function testKeepMaxVersionCount()
     {
-        Auth::shouldReceive('check')
-            ->andReturn( false );
-
         $name_v1 = 'first' ;
         $name_v2 = 'second' ;
         $name_v3 = 'third' ;
@@ -558,7 +504,7 @@ class VersionableTest extends VersionableTestCase
 
 
 
-class TestVersionableUser extends Illuminate\Database\Eloquent\Model {
+class TestVersionableUser extends \Illuminate\Foundation\Auth\User {
     use \Mpociot\Versionable\VersionableTrait;
 
     protected $table = "users";

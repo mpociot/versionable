@@ -21,9 +21,11 @@ trait VersionableTrait
      */
     protected function getVersionClass()
     {
-        if( property_exists( self::class, 'versionClass') )
-            return $this->versionClass ;
-        return Version::class ;
+        if( property_exists( self::class, 'versionClass') ) {
+            return $this->versionClass;
+        }
+
+        return config('versionable.version_model', Version::class);
     }
 
     /**
