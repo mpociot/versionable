@@ -23,9 +23,6 @@ class ServiceProvider extends LaravelServiceProvider
      */
     public function boot()
     {
-        $this->loadMigrationsFrom(__DIR__ . '/../../../migrations');
-
-
         $this->publishes([
             __DIR__.'/../../../config/config.php' => config_path('versionable.php'),
         ], 'config');
