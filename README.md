@@ -30,11 +30,14 @@ to your composer.json. Then run `composer install` or `composer update`.
 
 Or run `composer require mpociot/versionable ` if you prefere that.
 
-Run the migrations to create the "versions" table that will hold all version information.
+Publish configuration and migrations using the `vendor:publish` command.
 
 ```bash
-php artisan migrate --path=vendor/mpociot/versionable/src/migrations
+php artisan vendor:publish --provider="Mpociot\Versionable\Providers\ServiceProvider"
 ```
+
+Should you wish to publish them individually, this can be done by adding `--tag="config"`
+or `--tag="migrations"` to the call to `vendor:publish`.
 
 <a name="usage" />
 
