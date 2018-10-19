@@ -3,7 +3,6 @@ namespace Mpociot\Versionable;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Concerns\HasRelationships;
 
 /**
  * Class VersionableTrait
