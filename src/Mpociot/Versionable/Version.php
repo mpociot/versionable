@@ -1,9 +1,11 @@
 <?php
 namespace Mpociot\Versionable;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 /**
  * Class Version
@@ -51,7 +53,9 @@ class Version extends Eloquent
             ? stream_get_contents($this->model_data)
             : $this->model_data;
 
-        $model = new $this->versionable_type();
+        $class = Arr::get(Relation::morphMap(), $this->versionable_type, $this->versionable_type);
+
+        $model = new $class;
         $model->unguard();
         $model->fill(unserialize($modelData));
         $model->exists = true;
