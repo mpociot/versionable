@@ -30,10 +30,16 @@ to your composer.json. Then run `composer install` or `composer update`.
 
 Or run `composer require mpociot/versionable ` if you prefere that.
 
+Publish the migration file.
+
+```bash
+php artisan vendor:publish --provider="Mpociot\Versionable\Providers\ServiceProvider" --tag="migrations"
+```
+
 Run the migrations to create the "versions" table that will hold all version information.
 
 ```bash
-php artisan migrate --path=vendor/mpociot/versionable/src/migrations
+php artisan migrate
 ```
 
 <a name="usage" />
