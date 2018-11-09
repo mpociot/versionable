@@ -28,8 +28,7 @@ class ServiceProvider extends LaravelServiceProvider
         ], 'config');
         
         $this->publishes([
-            __DIR__.'/../../../migrations/create_versions_table.php' => 
-                database_path('/migrations/' . date('Y_m_d_His', time()) . '_create_versions_table.php')
+            __DIR__.'/../../../migrations/create_versions_table.php' => database_path('/migrations/' . date('Y_m_d_His', time()) . '_create_versions_table.php')
         ], 'migrations');
     }
 }
