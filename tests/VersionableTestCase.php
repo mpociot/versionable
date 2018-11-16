@@ -65,5 +65,11 @@ abstract class VersionableTestCase extends \Orchestra\Testbench\TestCase
             $table->index('versionable_id');
             $table->timestamps();
         });
+
+        $this->app['db']->connection()->getSchemaBuilder()->create(ModelWithJsonField::TABLENAME, function ($table) {
+            $table->increments('id');
+            $table->json('json_field');
+            $table->timestamps();
+        });
     }
 }
