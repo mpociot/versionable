@@ -11,7 +11,7 @@ use Mpociot\Versionable\VersionableTrait;
 class VersionableTest extends VersionableTestCase
 {
 
-    public function tearDown()
+    public function tearDown(): void
     {
         m::close();
         Auth::clearResolvedInstances();
