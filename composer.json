@@ -1,7 +1,7 @@
 {
     "name": "mpociot/versionable",
     "license": "MIT",
-    "description": "Allows to create Laravel 4 / 5 / 6 Model versioning and restoring",
+    "description": "Allows to create Laravel 4 / 5 / 6 / 7 Model versioning and restoring",
     "keywords": [
         "model",
         "laravel",
@@ -22,13 +22,13 @@
         "source": "https://github.com/mpociot/versionable"
     },
     "require": {
-        "php": ">=7.1.0 || >=7.2.0",
-        "illuminate/support": "~5.3 || ^6.0"
+        "php": ">=7.1.0 || >=7.2.5",
+        "illuminate/support": "~5.3 || ^6.0 || ^7.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "7.*",
+        "phpunit/phpunit": "^7.0 || ^8.0 || ^9.0",
         "mockery/mockery": "^1.0",
-        "orchestra/testbench": "^3.7"
+        "orchestra/testbench": "^3.1 || ^4.0 || ^5.0"
     },
     "autoload": {
         "classmap": [
