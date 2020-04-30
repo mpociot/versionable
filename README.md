@@ -1,5 +1,6 @@
 # Versionable
-## Easy to use Model versioning for Laravel
+
+## Laravel Model versioning made easy
 
 ![image](http://img.shields.io/packagist/v/mpociot/versionable.svg?style=flat)
 ![image](http://img.shields.io/packagist/l/mpociot/versionable.svg?style=flat)
@@ -22,18 +23,16 @@ $oldModel = Version::find(100)->getModel();
 
 ## Installation
 
-In order to add Versionable to your project, just add 
+You can install via composer:
 
-    "mpociot/versionable": "~3.0"
+```
+composer require mpociot/versionable
+```
 
-to your composer.json. Then run `composer install` or `composer update`.
+Run the migrations.
 
-Or run `composer require mpociot/versionable ` if you prefere that.
-
-Run the migrations to create the "versions" table that will hold all version information.
-
-```bash
-php artisan migrate --path=vendor/mpociot/versionable/src/migrations
+```
+php artisan migrate
 ```
 
 <a name="usage" />
@@ -49,6 +48,7 @@ class Content extends Model {
 	
 }
 ```
+
 That's it!
 
 Every time you update your model, a new version containing the previous attributes will be stored in your database. 
@@ -123,7 +123,6 @@ The diff method takes a version model as an argument. This defines the version t
  */
 $diff = $page->previousVersion()->diff();
 
-
 /**
  * Create a diff against a specific version
  */
@@ -154,7 +153,6 @@ You can also revert to a specific version ID of a model using:
 
 ```php
 $revertedModel = Version::find( $version_id )->revert();
-
 ```
 
 <a name="disableVersioning" />
@@ -187,9 +185,8 @@ To use a different table to store version for some model we have to change the t
 class MyModelVersion extends Version
 {
     $table = 'mymodel_versions';
-    ...
+    // ...
 }
-
 ```
 
 In the model that you want it use this specific versions table, use the `VersionableTrait` Trait and add the property `$versionClass` with value the specific version model.
@@ -199,9 +196,8 @@ class MyModel extends Eloquent
 {
     use VersionableTrait ;
     protected $versionClass = MyModelVersion::class ;
-    ... 
+    // ...
 }
-
 ```
 
 And do not forget to create a migration for this versions table, exactly as the default versions table.
