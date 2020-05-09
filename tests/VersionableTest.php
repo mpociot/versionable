@@ -289,6 +289,15 @@ class VersionableTest extends VersionableTestCase
 
     }
 
+    public function testGetVersionModelWithJsonField()
+    {
+        $model = new ModelWithJsonField();
+        $model->json_field = ["foo" => "bar"];
+        $model->save();
+
+        $this->assertEquals(["foo" => "bar"], $model->getVersionModel(1)->json_field);
+    }
+
     public function testUseReasonAttribute()
     {
         // Create 3 versions
@@ -546,5 +555,12 @@ class ModelWithDynamicVersion extends Model
     //use DynamicVersionModelTrait;
     use VersionableTrait ;
     protected $versionClass = DynamicVersionModel::class ;
+}
+class ModelWithJsonField extends Model
+{
+    const TABLENAME = 'table_with_json_field';
+    public $table = self::TABLENAME ;
+    use VersionableTrait ;
+    protected $casts = ['json_field' => 'array'];
 }
 

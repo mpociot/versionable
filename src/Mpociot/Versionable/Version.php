@@ -47,13 +47,9 @@ class Version extends Eloquent
      */
     public function getModel()
     {
-        $modelData = is_resource($this->model_data)
-            ? stream_get_contents($this->model_data)
-            : $this->model_data;
-
         $model = new $this->versionable_type();
         $model->unguard();
-        $model->fill(unserialize($modelData));
+        $model->fill($this->modelData());
         $model->exists = true;
         $model->reguard();
         return $model;
@@ -104,4 +100,24 @@ class Version extends Eloquent
         return $diffArray;
     }
 
+    /**
+     * Copy attributes of a model to be saved with the version
+     * 
+     * @param Model $model
+     */
+    public function copyModelData(Model $model)
+    {
+        $this->model_data = serialize($model->attributesToArray());
+    }
+
+    /**
+     * Model attributes
+     */
+    protected function modelData()
+    {
+        $serialized = is_resource($this->model_data)
+            ? stream_get_contents($this->model_data)
+            : $this->model_data;
+        return unserialize($serialized);
+    }
 }
