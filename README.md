@@ -32,7 +32,7 @@ composer require mpociot/versionable
 Run the migrations.
 
 ```
-php artisan migrate
+php artisan migrate --path=vendor/mpociot/versionable/src/migrations
 ```
 
 <a name="usage" />
