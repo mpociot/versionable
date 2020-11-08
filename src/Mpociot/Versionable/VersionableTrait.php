@@ -195,17 +195,20 @@ trait VersionableTrait
     private function purgeOldVersions()
     {
         $keep = isset($this->keepOldVersions) ? $this->keepOldVersions : 0;
-        $count = $this->versions()->count();
-
-        if ((int)$keep > 0 && $count > $keep) {
-            $oldVersions = $this->versions()
-                ->latest()
-                ->take($count)
-                ->skip($keep)
-                ->get()
-                ->each(function ($version) {
-                $version->delete();
-            });
+        
+        if ((int)$keep > 0) {
+            $count = $this->versions()->count();
+            
+            if ($count > $keep) {
+                $oldVersions = $this->versions()
+                    ->latest()
+                    ->take($count)
+                    ->skip($keep)
+                    ->get()
+                    ->each(function ($version) {
+                    $version->delete();
+                });
+            }
         }
     }
 
