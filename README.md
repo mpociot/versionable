@@ -35,6 +35,18 @@ Run the migrations.
 php artisan migrate --path=vendor/mpociot/versionable/src/migrations
 ```
 
+Alternatively, publish the migrations.
+
+```
+php artisan vendor:publish --provider="Mpociot\Versionable\Providers\ServiceProvider" --tag="migrations"
+```
+
+Then customize and run them.
+
+```
+php artisan migrate
+```
+
 <a name="usage" />
 
 ## Usage
