@@ -27,6 +27,10 @@ class ServiceProvider extends LaravelServiceProvider
             __DIR__.'/../../../config/config.php' => config_path('versionable.php'),
         ], 'config');
 
+        $this->publishes([
+            __DIR__ . '/../../../migrations/' => database_path('/migrations'),
+        ], 'migrations');
+
         // $this->loadMigrationsFrom(__DIR__.'/../../../migrations');
     }
 }
