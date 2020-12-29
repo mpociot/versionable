@@ -17,7 +17,7 @@ class CreateVersionsTable extends Migration {
 		{
 			$table->increments('version_id');
 			$table->string('versionable_id');
-            $table->string('versionable_type');
+			$table->string('versionable_type');
 			$table->string('user_id')->nullable();
 			$table->longText('model_data');
 			$table->string('reason', 100)->nullable();
