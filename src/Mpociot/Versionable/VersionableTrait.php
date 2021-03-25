@@ -113,8 +113,7 @@ trait VersionableTrait
      */
     public function currentVersion()
     {
-        $class = $this->getVersionClass();
-        return $this->versions()->orderBy( $class::CREATED_AT, 'DESC')->first();
+        return $this->getLatestVersions()->first();
     }
 
     /**
@@ -123,8 +122,7 @@ trait VersionableTrait
      */
     public function previousVersion()
     {
-        $class = $this->getVersionClass();
-        return $this->versions()->latest()->limit(1)->offset(1)->first();
+        return $this->getLatestVersions()->limit(1)->offset(1)->first();
     }
 
     /**
@@ -200,8 +198,7 @@ trait VersionableTrait
             $count = $this->versions()->count();
             
             if ($count > $keep) {
-                $oldVersions = $this->versions()
-                    ->latest()
+                $this->getLatestVersions()
                     ->take($count)
                     ->skip($keep)
                     ->get()
@@ -234,10 +231,15 @@ trait VersionableTrait
      */
     protected function getAuthUserId()
     {
-        if (Auth::check()) {
-            return Auth::id();
-        }
-        return null;
+        return Auth::check() ? Auth::id() : null;
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    protected function getLatestVersions()
+    {
+        return $this->versions()->orderByDesc('version_id');
     }
 
 
