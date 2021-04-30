@@ -173,7 +173,11 @@ trait VersionableTrait
             $version->versionable_id   = $this->getKey();
             $version->versionable_type = method_exists($this, 'getMorphClass') ? $this->getMorphClass() : get_class($this);
             $version->user_id          = $this->getAuthUserId();
+            
+            $versionedHiddenFields = $this->versionedHiddenFields ?? [];
+            $this->makeVisible($versionedHiddenFields);
             $version->model_data       = serialize($this->attributesToArray());
+            $this->makeHidden($versionedHiddenFields);
 
             if (!empty( $this->reason )) {
                 $version->reason = $this->reason;

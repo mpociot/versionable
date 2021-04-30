@@ -488,6 +488,31 @@ class VersionableTest extends VersionableTestCase
 
         $this->assertEquals( $name_v3, $model->name );
     }
+
+    public function testAllowHiddenFields() {
+        $user = new TestHiddenFieldsUser();
+        $user->name = "Marcel";
+        $user->email = "m.pociot@test.php";
+        $user->password = "12345";
+        $user->save();
+        sleep(1);
+
+        $user->name = "John";
+        $user->email = "j.barlow@test.php";
+        $user->password = "6789";
+        $user->save();
+        sleep(1);
+
+        $diff = $user->previousVersion()->diff();
+
+        $this->assertArrayHasKey('email', $diff);
+        $this->assertArrayHasKey('password', $diff);
+        $this->assertEquals( 'John', $diff['name'] );
+        $this->assertEquals( 'j.barlow@test.php', $diff['email'] );
+        $this->assertEquals( '6789', $diff['password'] );
+
+        $this->assertArrayNotHasKey('password', $user->toArray());
+    }
  
 }
 
@@ -545,3 +570,12 @@ class ModelWithJsonField extends Model
     protected $casts = ['json_field' => 'array'];
 }
 
+class TestHiddenFieldsUser extends \Illuminate\Foundation\Auth\User {
+    use \Mpociot\Versionable\VersionableTrait;
+
+    protected $table = "users";
+
+    protected $hidden = ['email', 'password'];
+
+    protected $versionedHiddenFields = ['email', 'password'];
+}
