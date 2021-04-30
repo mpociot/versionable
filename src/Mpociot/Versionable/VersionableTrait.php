@@ -171,7 +171,7 @@ trait VersionableTrait
             $class                     = $this->getVersionClass();
             $version                   = new $class();
             $version->versionable_id   = $this->getKey();
-            $version->versionable_type = get_class($this);
+            $version->versionable_type = method_exists($this, 'getMorphClass') ? $this->getMorphClass() : get_class($this);
             $version->user_id          = $this->getAuthUserId();
             $version->model_data       = serialize($this->attributesToArray());
 
