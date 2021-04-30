@@ -63,8 +63,6 @@ class VersionableTest extends VersionableTestCase
         $user->password = "12345";
         $user->last_login = $user->freshTimestamp();
         $user->save();
-        // Needed because otherwise timestamps are exactly the same
-        sleep(1);
 
         $user->name = "John";
         $user->save();
@@ -121,9 +119,6 @@ class VersionableTest extends VersionableTestCase
         $responsibleOrigUser->save();
 
         auth()->login($responsibleOrigUser);
-
-        // Needed because otherwise timestamps are exactly the same
-        sleep(1);
 
         $user = new TestVersionableUser();
         $user->name = "John";
@@ -341,7 +336,6 @@ class VersionableTest extends VersionableTestCase
         $user->password = "12345";
         $user->last_login = $user->freshTimestamp();
         $user->save();
-        sleep(1);
 
         $user->name = "John";
         $user->save();
@@ -361,7 +355,6 @@ class VersionableTest extends VersionableTestCase
         $user->password = "12345";
         $user->last_login = $user->freshTimestamp();
         $user->save();
-        sleep(1);
 
         $user->name = "John";
         $user->created_at = Carbon::now();
@@ -385,12 +378,10 @@ class VersionableTest extends VersionableTestCase
         $user->password = "12345";
         $user->last_login = $user->freshTimestamp();
         $user->save();
-        sleep(1);
 
         $user->name = "John";
         $user->email = "john@snow.com";
         $user->save();
-        sleep(1);
 
         $user->name = "Julia";
         $user->save();
@@ -418,8 +409,6 @@ class VersionableTest extends VersionableTestCase
         $model = new ModelWithDynamicVersion();
         $model->name = $name_v1 ;
         $model->save();
-
-        sleep(1);
 
         $model->name = $name_v2 ;
         $model->save();
@@ -455,8 +444,6 @@ class VersionableTest extends VersionableTestCase
         $model->password = $name_v1 ;
         $model->save();
 
-        sleep(1);
-
         $model->name = $name_v2 ;
         $model->save();
 
@@ -480,18 +467,12 @@ class VersionableTest extends VersionableTestCase
         $model->name = $name_v1 ;
         $model->save();
         
-        sleep(1);
-
         $model->name = $name_v2 ;
         $model->save();
         
-        sleep(1);
-
         $model->name = $name_v3 ;
         $model->save();
         
-        sleep(1);
-
         $model->name = $name_v4 ;
         $model->save();
 
