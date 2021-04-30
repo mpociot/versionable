@@ -89,6 +89,28 @@ class User extends Model {
 }
 ```
 
+<a name="hiddenFields" />
+
+### Hidden fields
+
+There are times you might want to include hidden fields in the version data. You might have hidden the fields with the `visible` or `hidden` properties in your model.
+
+You can have those fields that are typically hidden in the rest of your project saved in the version data by adding them to the `versionedHiddenFields` property of the versionable model.
+
+```php
+class User {
+
+    use VersionableTrait;
+
+    // Typically hidden fields
+    protected $hidden = ['email', 'password'];
+
+    // Save these hidden fields
+    protected $versionedHiddenFields = ['email', 'password'];
+
+}
+```
+
 <a name="maximum" />
 
 ### Maximum number of stored versions
