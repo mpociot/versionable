@@ -14,7 +14,7 @@ trait VersionableTrait
     /**
      * Retrieve, if exists, the property that define that Version model.
      * If no property defined, use the default Version model.
-     * 
+     *
      * Trait cannot share properties whth their class !
      * http://php.net/manual/en/language.oop5.traits.php
      * @return unknown|string
@@ -26,6 +26,16 @@ trait VersionableTrait
         }
 
         return config('versionable.version_model', Version::class);
+    }
+
+    /**
+     * Get the encoding, the default is serialize.
+     *
+     * @return string
+     */
+    protected function getEncoding()
+    {
+        return config('versionable.encoding', 'serialize');
     }
 
     /**
@@ -173,10 +183,12 @@ trait VersionableTrait
             $version->versionable_id   = $this->getKey();
             $version->versionable_type = method_exists($this, 'getMorphClass') ? $this->getMorphClass() : get_class($this);
             $version->user_id          = $this->getAuthUserId();
-            
+
             $versionedHiddenFields = $this->versionedHiddenFields ?? [];
             $this->makeVisible($versionedHiddenFields);
-            $version->model_data       = serialize($this->attributesToArray());
+            $version->model_data = $this->getEncoding() === 'json'
+                ? json_encode($this->attributesToArray())
+                : serialize($this->attributesToArray());
             $this->makeHidden($versionedHiddenFields);
 
             if (!empty( $this->reason )) {
@@ -233,16 +245,16 @@ trait VersionableTrait
 
     /**
      * Delete old versions of this model when they reach a specific count.
-     * 
+     *
      * @return void
      */
     private function purgeOldVersions()
     {
         $keep = isset($this->keepOldVersions) ? $this->keepOldVersions : 0;
-        
+
         if ((int)$keep > 0) {
             $count = $this->versions()->count();
-            
+
             if ($count > $keep) {
                 $this->getLatestVersions()
                     ->take($count)
