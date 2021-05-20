@@ -461,19 +461,19 @@ class VersionableTest extends VersionableTestCase
         $name_v2 = 'second' ;
         $name_v3 = 'third' ;
         $name_v4 = 'fourth' ;
-        
+
         $model = new ModelWithMaxVersions();
         $model->email = "m.pociot@test.php";
         $model->password = "foo";
         $model->name = $name_v1 ;
         $model->save();
-        
+
         $model->name = $name_v2 ;
         $model->save();
-        
+
         $model->name = $name_v3 ;
         $model->save();
-        
+
         $model->name = $name_v4 ;
         $model->save();
 
@@ -529,7 +529,24 @@ class VersionableTest extends VersionableTestCase
         $this->assertEquals( $user->attributesToArray(), $version->getModel()->attributesToArray() );
         Relation::morphMap([], false);
     }
- 
+
+    public function testVersionWithJson()
+    {
+        $this->app['config']->set('versionable.encoding', 'json');
+
+        $user = new TestVersionableUser();
+        $user->name = "Marcel";
+        $user->email = "m.pociot@test.php";
+        $user->password = "12345";
+        $user->last_login = $user->freshTimestamp();
+        $user->save();
+
+        $version = $user->currentVersion();
+
+        $this->assertStringStartsWith( '{', $version->model_data, 'Model data is not json encoded' );
+        $this->assertEquals( $user->attributesToArray(), $version->getModel()->attributesToArray() );
+    }
+
 }
 
 
