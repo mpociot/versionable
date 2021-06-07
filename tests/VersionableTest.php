@@ -1,12 +1,13 @@
 <?php
 
+use Mockery as m;
 use Carbon\Carbon;
+use Mpociot\Versionable\Version;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
-use Mockery as m;
 use Illuminate\Database\Eloquent\Model;
-use Mpociot\Versionable\Version;
 use Mpociot\Versionable\VersionableTrait;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 class VersionableTest extends VersionableTestCase
 {
@@ -512,6 +513,21 @@ class VersionableTest extends VersionableTestCase
         $this->assertEquals( '6789', $diff['password'] );
 
         $this->assertArrayNotHasKey('password', $user->toArray());
+    }
+
+    public function testWhereModelHasMorphMap()
+    {
+        Relation::morphMap(['users' => TestVersionableUser::class]);
+        $user = new TestVersionableUser();
+        $user->name = "Test";
+        $user->email = "example@test.php";
+        $user->password = "12345";
+        $user->last_login = $user->freshTimestamp();
+        $user->save();
+
+        $version = $user->currentVersion();
+        $this->assertEquals( $user->attributesToArray(), $version->getModel()->attributesToArray() );
+        Relation::morphMap([], false);
     }
  
 }

@@ -51,7 +51,8 @@ class Version extends Eloquent
             ? stream_get_contents($this->model_data,-1,0)
             : $this->model_data;
 
-        $model = new $this->versionable_type();
+        $className = self::getActualClassNameForMorph($this->versionable_type);
+        $model = new $className();
         $model->unguard();
         $model->fill(unserialize($modelData));
         $model->exists = true;
