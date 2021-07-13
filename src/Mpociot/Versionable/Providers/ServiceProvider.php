@@ -6,6 +6,10 @@ use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
 
 class ServiceProvider extends LaravelServiceProvider
 {
+    protected $commands = [
+        \Mpociot\Versionable\Console\ConvertEncoding::class,
+    ];
+
     /**
      * Register bindings in the container.
      *
@@ -14,6 +18,8 @@ class ServiceProvider extends LaravelServiceProvider
     public function register ()
     {
         $this->mergeConfigFrom(__DIR__.'/../../../config/config.php', 'versionable');
+
+        $this->commands($this->commands);
     }
 
     /**
