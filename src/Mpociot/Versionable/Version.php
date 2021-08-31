@@ -89,7 +89,7 @@ class Version extends Eloquent
         $model = $this->getModel();
         $diff  = $againstVersion ? $againstVersion->getModel() : $this->versionable()->withTrashed()->first()->currentVersion()->getModel();
 
-        $diffArray = array_diff_assoc($diff->getAttributes(), $model->getAttributes());
+        $diffArray = $this->arrayDiffAssocRecursive($diff->getAttributes(), $model->getAttributes());
 
         if (isset( $diffArray[ $model->getCreatedAtColumn() ] )) {
             unset( $diffArray[ $model->getCreatedAtColumn() ] );
@@ -104,4 +104,33 @@ class Version extends Eloquent
         return $diffArray;
     }
 
+    /**
+     * Recursive version of array_diff_assoc.
+     *
+     * @param $array1
+     * @param $array2
+     *
+     * @return array
+     */
+    public function arrayDiffAssocRecursive($array1, $array2)
+    {
+        $difference = [];
+
+        foreach ($array1 as $key => $value) {
+            if (is_array($value)) {
+                if (!isset($array2[$key]) || !is_array($array2[$key])) {
+                    $difference[$key] = $value;
+                } else {
+                    $new_diff = $this->arrayDiffAssocRecursive($value, $array2[$key]);
+                    if (!empty($new_diff)) {
+                        $difference[$key] = $new_diff;
+                    }
+                }
+            } elseif (!array_key_exists($key, $array2) || $array2[$key] !== $value) {
+                $difference[$key] = $value;
+            }
+        }
+
+        return $difference;
+    }
 }
