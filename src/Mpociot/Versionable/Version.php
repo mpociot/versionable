@@ -118,15 +118,15 @@ class Version extends Eloquent
 
         foreach ($array1 as $key => $value) {
             if (is_array($value)) {
-                if (!isset($array2[$key]) || !is_array($array2[$key])) {
-                    $difference[$key] = $value;
-                } else {
+                if (isset($array2[$key])) {
                     $new_diff = $this->arrayDiffAssocRecursive($value, $array2[$key]);
-                    if (!empty($new_diff)) {
+                    if (! empty($new_diff)) {
                         $difference[$key] = $new_diff;
                     }
+                } else {
+                    $difference[$key] = $value;
                 }
-            } elseif (!array_key_exists($key, $array2) || $array2[$key] !== $value) {
+            } elseif (! in_array($value, $array2, true)) { 
                 $difference[$key] = $value;
             }
         }
