@@ -155,7 +155,7 @@ trait VersionableTrait
     }
 
     /**
-     * Save a new version.
+     * Save a new version if it is valid for saving.
      * @return void
      */
     protected function versionablePostSave()
@@ -168,25 +168,34 @@ trait VersionableTrait
             ( $this->versioningEnabled === true && !$this->updating && !is_null($this->versionableDirtyData) && count($this->versionableDirtyData))
         ) {
             // Save a new version
-            $class                     = $this->getVersionClass();
-            $version                   = new $class();
-            $version->versionable_id   = $this->getKey();
-            $version->versionable_type = method_exists($this, 'getMorphClass') ? $this->getMorphClass() : get_class($this);
-            $version->user_id          = $this->getAuthUserId();
-            
-            $versionedHiddenFields = $this->versionedHiddenFields ?? [];
-            $this->makeVisible($versionedHiddenFields);
-            $version->model_data       = serialize($this->attributesToArray());
-            $this->makeHidden($versionedHiddenFields);
-
-            if (!empty( $this->reason )) {
-                $version->reason = $this->reason;
-            }
-
-            $version->save();
+            $this->saveVersion();
 
             $this->purgeOldVersions();
         }
+    }
+
+    /**
+     * Save a new version.
+     * @return void
+     */
+    public function saveVersion()
+    {
+        $class                     = $this->getVersionClass();
+        $version                   = new $class();
+        $version->versionable_id   = $this->getKey();
+        $version->versionable_type = method_exists($this, 'getMorphClass') ? $this->getMorphClass() : get_class($this);
+        $version->user_id          = $this->getAuthUserId();
+
+        $versionedHiddenFields = $this->versionedHiddenFields ?? [];
+        $this->makeVisible($versionedHiddenFields);
+        $version->model_data       = serialize($this->attributesToArray());
+        $this->makeHidden($versionedHiddenFields);
+
+        if (!empty( $this->reason )) {
+            $version->reason = $this->reason;
+        }
+
+        $version->save();
     }
 
     /**
