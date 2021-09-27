@@ -207,6 +207,20 @@ $user->update([
 ]);
 ```
 
+<a name="createInitialVersion" />
+
+### Create initial version for an existing model
+
+When you integrate versionable package in an existing project, you might want to create initial versions for the existing models
+without making any actual changes.
+
+This can be achieved by using the `saveVersion` method on the versionable model.
+
+```php
+$user = User::find(1);
+$user->saveVersion();
+```
+
 <a name="differentVersionTable" />
 
 ### Use different version table
