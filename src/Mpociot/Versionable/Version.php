@@ -32,6 +32,15 @@ class Version extends Eloquent
     }
 
     /**
+     * Return the encoding
+     * @return mixed
+     */
+    private function getEncoding()
+    {
+        return config('versionable.encoding', 'serialize');
+    }
+
+    /**
      * Return the user responsible for this version
      * @return mixed
      */
@@ -50,11 +59,12 @@ class Version extends Eloquent
         $modelData = is_resource($this->model_data)
             ? stream_get_contents($this->model_data,-1,0)
             : $this->model_data;
+        $modelDataEncoded = $this->getEncoding() === 'json' ? json_decode($modelData, true) : unserialize($modelData);
 
         $className = self::getActualClassNameForMorph($this->versionable_type);
         $model = new $className();
         $model->unguard();
-        $model->fill(unserialize($modelData));
+        $model->fill($modelDataEncoded);
         $model->exists = true;
         $model->reguard();
         return $model;
