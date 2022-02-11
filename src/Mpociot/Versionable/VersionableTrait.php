@@ -176,7 +176,7 @@ trait VersionableTrait
             
             $versionedHiddenFields = $this->versionedHiddenFields ?? [];
             $this->makeVisible($versionedHiddenFields);
-            $version->model_data       = serialize($this->attributesToArray());
+            $version->model_data       = serialize($this->attributesToVersion());
             $this->makeHidden($versionedHiddenFields);
 
             if (!empty( $this->reason )) {
@@ -187,6 +187,19 @@ trait VersionableTrait
 
             $this->purgeOldVersions();
         }
+    }
+
+    /**
+     * Wrapper for getting attributes to version, respecting $dontVersionFields.
+     *
+     * @return array
+     */
+    protected function attributesToVersion()
+    {
+        $attributes = $this->attributesToArray();
+        $ignore = $this->dontVersionFields ?? [];
+
+        return collect($attributes)->except($ignore)->all();
     }
 
     /**
