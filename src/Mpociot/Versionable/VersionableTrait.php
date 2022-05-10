@@ -190,7 +190,7 @@ trait VersionableTrait
     }
 
     /**
-     * Delete old versions of this model when the reach a specific count.
+     * Delete old versions of this model when they reach a specific count.
      * 
      * @return void
      */
