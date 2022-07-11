@@ -3,6 +3,8 @@ namespace Mpociot\Versionable;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Mpociot\Versionable\Encoders\Encoder;
+use Mpociot\Versionable\Encoders\SerializeEncoder;
 
 /**
  * Class VersionableTrait
@@ -29,13 +31,13 @@ trait VersionableTrait
     }
 
     /**
-     * Get the encoding, the default is serialize.
+     * Get the encoder.
      *
-     * @return string
+     * @return Encoder
      */
-    protected function getEncoding()
+    protected function getEncoder(): Encoder
     {
-        return config('versionable.encoding', 'serialize');
+        return app(config('versionable.encoder', SerializeEncoder::class));
     }
 
     /**
@@ -186,9 +188,7 @@ trait VersionableTrait
 
             $versionedHiddenFields = $this->versionedHiddenFields ?? [];
             $this->makeVisible($versionedHiddenFields);
-            $version->model_data = $this->getEncoding() === 'json'
-                ? json_encode($this->attributesToArray())
-                : serialize($this->attributesToArray());
+            $version->model_data = $this->getEncoder()->encode($this->attributesToArray());
             $this->makeHidden($versionedHiddenFields);
 
             if (!empty( $this->reason )) {

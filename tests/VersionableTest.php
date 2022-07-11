@@ -575,7 +575,7 @@ class VersionableTest extends VersionableTestCase
 
     public function testVersionWithJson()
     {
-        $this->app['config']->set('versionable.encoding', 'json');
+        $this->app['config']->set('versionable.encoder', \Mpociot\Versionable\Encoders\JsonEncoder::class);
 
         $user = new TestVersionableUser();
         $user->name = "Nono";
