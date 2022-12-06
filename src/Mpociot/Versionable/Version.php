@@ -4,6 +4,7 @@ namespace Mpociot\Versionable;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Model;
+use Mpociot\Versionable\Jobs\VersionableJob;
 
 /**
  * Class Version
@@ -105,4 +106,39 @@ class Version extends Eloquent
         return $diffArray;
     }
 
+    public static function createVersionForModel(Model $model)
+    {
+        if (
+            ( $model->versioningEnabled === true && $model->updating && $model->isValidForVersioning() ) ||
+            ( $model->versioningEnabled === true && !$model->updating && !is_null($model->versionableDirtyData) && count($model->versionableDirtyData))
+        ) {
+            \Log::info('2');
+
+            // Save a new version
+            $class                     = $model->getVersionClass();
+            $version                   = new $class();
+            $version->versionable_id   = $model->getKey();
+            $version->versionable_type = method_exists($model, 'getMorphClass') ? $model->getMorphClass() : get_class($model);
+            $version->user_id          = $model->getAuthUserId();
+
+            \Log::info('3');
+
+            $versionedHiddenFields = $model->versionedHiddenFields ?? [];
+            $model->makeVisible($versionedHiddenFields);
+            $version->model_data       = serialize($model->attributesToArray());
+            $model->makeHidden($versionedHiddenFields);
+
+            \Log::info('4');
+
+            if (!empty( $model->reason )) {
+                $version->reason = $model->reason;
+            }
+
+            \Log::info('5');
+
+            $version->save();
+
+            $model->purgeOldVersions();
+        }
+    }
 }
