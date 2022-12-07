@@ -48,7 +48,7 @@ trait VersionableTrait
      * Optional reason, why this version was created
      * @var string
      */
-    private $reason;
+    public $reason;
 
     /**
      * Flag that determines if the model allows versioning at all
@@ -163,7 +163,7 @@ trait VersionableTrait
     protected function versionablePostSave()
     {
         if (config('versionable.use_queue', false)) {
-            VersionableJob::dispatch($this->id, get_class($this), $this->getAttributes(), $this->getRawOriginal());
+            VersionableJob::dispatch($this, $this?->reason);
         } else {
             Version::createVersionForModel($this);
         }

@@ -2,15 +2,14 @@
 
 namespace Mpociot\Versionable\Jobs;
 
-use Adaptor\Core\Classes\ServiceExecutionData;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use Mpociot\Versionable\Version;
+use ReflectionClass;
 use ReflectionException;
 
 class VersionableJob implements ShouldQueue
@@ -20,9 +19,17 @@ class VersionableJob implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    public function __construct(private int $id, private string $modelClass, private array $attributes, private array $originalAttributes)
+    private int $id;
+    private string $modelClass;
+    private array $attributes;
+    private array $originalAttributes;
+
+    public function __construct(private Model $model, private string $reason)
     {
-//        \Log::info('model', ['id' => $id, 'class' => $modelClass, 'attributes' => $this->attributes, 'original' => $this->originalAttributes]);
+        $this->attributes = $this->model->getAttributes();
+        $this->originalAttributes = $this->model->getOriginal();
+        $this->id = $this->model->id;
+        $this->modelClass = get_class($this->model);
     }
 
     /**
@@ -30,7 +37,7 @@ class VersionableJob implements ShouldQueue
      */
     public function handle()
     {
-        $resourceReflection = new \ReflectionClass($this->modelClass);
+        $resourceReflection = new ReflectionClass($this->modelClass);
         $staticResource = $resourceReflection->newInstanceWithoutConstructor();
         $model = $staticResource->find($this->id);
 
@@ -45,7 +52,8 @@ class VersionableJob implements ShouldQueue
         }
 
         $model->versionableDirtyData = $model->getDirty();
-        $model->updating             = $model->exists;
+        $model->updating = $model->exists;
+        $model->reason = $this->reason;
 
         Version::createVersionForModel($model);
     }
