@@ -24,7 +24,7 @@ class VersionableJob implements ShouldQueue
     private array $attributes;
     private array $originalAttributes;
 
-    public function __construct(private Model $model, private string $reason)
+    public function __construct(private Model $model, private string|null $reason = null)
     {
         $this->attributes = $this->model->getAttributes();
         $this->originalAttributes = $this->model->getOriginal();
