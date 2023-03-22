@@ -199,7 +199,6 @@ trait VersionableTrait
         foreach (self::all() as $obj) {
             $obj->createInitialVersion();
         }
-        return true;
     }
 
     /**
@@ -208,7 +207,7 @@ trait VersionableTrait
      */
     public function createInitialVersion()
     {
-        if(true === $this->versions->isEmpty()) {
+        if(true === $this->fresh()->versions->isEmpty()) {
 
             $class                     = $this->getVersionClass();
             $version                   = new $class();

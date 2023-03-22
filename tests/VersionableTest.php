@@ -529,6 +529,48 @@ class VersionableTest extends VersionableTestCase
         $this->assertEquals( $user->attributesToArray(), $version->getModel()->attributesToArray() );
         Relation::morphMap([], false);
     }
+
+    public function testAddVersionableToExistingUser()
+    {
+        $user = new \Illuminate\Foundation\Auth\User();
+        $user->name = "Danny";
+        $user->email = "danny.boy@bmail.php";
+        $user->password = "12345";
+        $user->save();
+
+        $this->assertNull($user->versions );
+
+        $user = TestVersionableUser::find($user->id);
+        $this->assertCount(0, $user->versions );
+        $user->createInitialVersion();
+        $this->assertCount(1, $user->fresh()->versions );
+
+        //ASSERT THAT createInitialVersion() ONLY WORKS ONCE
+        $user->createInitialVersion();
+        $this->assertCount(1, $user->fresh()->versions );
+    }
+
+    public function testInitializeModel()
+    {
+        $user = new \Illuminate\Foundation\Auth\User();
+        $user->name = "Danny";
+        $user->email = "danny.boy@bmail.php";
+        $user->password = "12345";
+        $user->save();
+
+        $this->assertNull($user->versions );
+
+        $user = TestVersionableUser::find($user->id);
+        $this->assertCount(0, $user->versions );
+        
+        TestVersionableUser::initializeVersionOnAllRows();
+        $this->assertCount(1, $user->fresh()->versions );
+
+        //ASSERT THAT createInitialVersion() ONLY WORKS ONCE
+        TestVersionableUser::initializeVersionOnAllRows();
+        $this->assertCount(1, $user->fresh()->versions );
+    }
+
  
 }
 
