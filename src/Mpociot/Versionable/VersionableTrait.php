@@ -207,7 +207,9 @@ trait VersionableTrait
      */
     public function createInitialVersion()
     {
-        if(true === $this->fresh()->versions->isEmpty()) {
+        if( true === $this->fresh()->versions->isEmpty() &&
+            true === $this->versioningEnabled 
+        ) {
 
             $class                     = $this->getVersionClass();
             $version                   = new $class();
@@ -255,6 +257,7 @@ trait VersionableTrait
 
     /**
      * Determine if a new version should be created for this model.
+     * Checks if appropriate fields have been changed.
      *
      * @return bool
      */
