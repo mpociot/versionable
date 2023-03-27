@@ -21,8 +21,8 @@ class VersionableTest extends VersionableTestCase
     public function testVersionableRelation()
     {
         $user = new TestVersionableUser();
-        $user->name = "Marcel";
-        $user->email = "m.pociot@test.php";
+        $user->name = "Nono";
+        $user->email = "nono.ma@test.php";
         $user->password = "12345";
         $user->last_login = $user->freshTimestamp();
         $user->save();
@@ -34,8 +34,8 @@ class VersionableTest extends VersionableTestCase
     public function testInitialSaveShouldCreateVersion()
     {
         $user = new TestVersionableUser();
-        $user->name = "Marcel";
-        $user->email = "m.pociot@test.php";
+        $user->name = "Nono";
+        $user->email = "nono.ma@test.php";
         $user->password = "12345";
         $user->last_login = $user->freshTimestamp();
         $user->save();
@@ -46,8 +46,8 @@ class VersionableTest extends VersionableTestCase
     public function testRetrievePreviousVersionFails()
     {
         $user = new TestVersionableUser();
-        $user->name = "Marcel";
-        $user->email = "m.pociot@test.php";
+        $user->name = "Nono";
+        $user->email = "nono.ma@test.php";
         $user->password = "12345";
         $user->last_login = $user->freshTimestamp();
         $user->save();
@@ -59,8 +59,8 @@ class VersionableTest extends VersionableTestCase
     public function testRetrievePreviousVersionExists()
     {
         $user = new TestVersionableUser();
-        $user->name = "Marcel";
-        $user->email = "m.pociot@test.php";
+        $user->name = "Nono";
+        $user->email = "nono.ma@test.php";
         $user->password = "12345";
         $user->last_login = $user->freshTimestamp();
         $user->save();
@@ -71,14 +71,14 @@ class VersionableTest extends VersionableTestCase
         $this->assertCount(2, $user->versions );
         $this->assertNotNull( $user->previousVersion() );
 
-        $this->assertEquals( "Marcel", $user->previousVersion()->getModel()->name );
+        $this->assertEquals( "Nono", $user->previousVersion()->getModel()->name );
     }
 
     public function testVersionAndModelAreEqual()
     {
         $user = new TestVersionableUser();
-        $user->name = "Marcel";
-        $user->email = "m.pociot@test.php";
+        $user->name = "Nono";
+        $user->email = "nono.ma@test.php";
         $user->password = "12345";
         $user->last_login = $user->freshTimestamp();
         $user->save();
@@ -99,8 +99,8 @@ class VersionableTest extends VersionableTestCase
             ->andReturn( $user_id );
 
         $user = new TestVersionableUser();
-        $user->name = "Marcel";
-        $user->email = "m.pociot@test.php";
+        $user->name = "Nono";
+        $user->email = "nono.ma@test.php";
         $user->password = "12345";
         $user->last_login = $user->freshTimestamp();
         $user->save();
@@ -113,8 +113,8 @@ class VersionableTest extends VersionableTestCase
     public function testGetResponsibleUserAttribute()
     {
         $responsibleOrigUser = new TestVersionableUser();
-        $responsibleOrigUser->name = "Marcel";
-        $responsibleOrigUser->email = "m.pociot@test.php";
+        $responsibleOrigUser->name = "Nono";
+        $responsibleOrigUser->email = "nono.ma@test.php";
         $responsibleOrigUser->password = "12345";
         $responsibleOrigUser->last_login = $responsibleOrigUser->freshTimestamp();
         $responsibleOrigUser->save();
@@ -140,8 +140,8 @@ class VersionableTest extends VersionableTestCase
     public function testDontVersionEveryAttribute()
     {
         $user = new TestPartialVersionableUser();
-        $user->name = "Marcel";
-        $user->email = "m.pociot@test.php";
+        $user->name = "Nono";
+        $user->email = "nono.ma@test.php";
         $user->password = "12345";
         $user->last_login = $user->freshTimestamp();
         $user->save();
@@ -156,8 +156,8 @@ class VersionableTest extends VersionableTestCase
     public function testVersionEveryAttribute()
     {
         $user = new TestVersionableUser();
-        $user->name = "Marcel";
-        $user->email = "m.pociot@test.php";
+        $user->name = "Nono";
+        $user->email = "nono.ma@test.php";
         $user->password = "12345";
         $user->last_login = $user->freshTimestamp();
         $user->save();
@@ -173,8 +173,8 @@ class VersionableTest extends VersionableTestCase
         $user = new TestVersionableUser();
         $user->disableVersioning();
 
-        $user->name = "Marcel";
-        $user->email = "m.pociot@test.php";
+        $user->name = "Nono";
+        $user->email = "nono.ma@test.php";
         $user->password = "12345";
         $user->last_login = $user->freshTimestamp();
         $user->save();
@@ -196,8 +196,8 @@ class VersionableTest extends VersionableTestCase
     {
         $user = new TestVersionableUser();
 
-        $user->name = "Marcel";
-        $user->email = "m.pociot@test.php";
+        $user->name = "Nono";
+        $user->email = "nono.ma@test.php";
         $user->password = "12345";
         $user->last_login = $user->freshTimestamp();
         $user->save();
@@ -213,8 +213,8 @@ class VersionableTest extends VersionableTestCase
     {
         $user = new TestVersionableUser();
 
-        $user->name = "Marcel";
-        $user->email = "m.pociot@test.php";
+        $user->name = "Nono";
+        $user->email = "nono.ma@test.php";
         $user->password = "12345";
         $user->last_login = $user->freshTimestamp();
         $user->save();
@@ -231,15 +231,15 @@ class VersionableTest extends VersionableTestCase
         $newUser->versions()->first()->revert();
 
         $newUser = TestVersionableUser::find( $user_id );
-        $this->assertEquals( "Marcel", $newUser->name );
+        $this->assertEquals( "Nono", $newUser->name );
     }
 
     public function testCanRevertSoftDeleteVersion()
     {
         $user = new TestVersionableSoftDeleteUser();
 
-        $user->name = "Marcel";
-        $user->email = "m.pociot@test.php";
+        $user->name = "Nono";
+        $user->email = "nono.ma@test.php";
         $user->password = "12345";
         $user->last_login = $user->freshTimestamp();
         $user->save();
@@ -256,16 +256,16 @@ class VersionableTest extends VersionableTestCase
         $reverted = $newUser->versions()->first()->revert();
 
         $newUser = TestVersionableSoftDeleteUser::find( $user_id );
-        $this->assertEquals( "Marcel", $reverted->name );
-        $this->assertEquals( "Marcel", $newUser->name );
+        $this->assertEquals( "Nono", $reverted->name );
+        $this->assertEquals( "Nono", $newUser->name );
     }
 
     public function testGetVersionModel()
     {
         // Create 3 versions
         $user = new TestVersionableUser();
-        $user->name = "Marcel";
-        $user->email = "m.pociot@test.php";
+        $user->name = "Nono";
+        $user->email = "nono.ma@test.php";
         $user->password = "12345";
         $user->last_login = $user->freshTimestamp();
         $user->save();
@@ -278,7 +278,7 @@ class VersionableTest extends VersionableTestCase
 
         $this->assertCount( 3, $user->versions );
 
-        $this->assertEquals( "Marcel", $user->getVersionModel( 1 )->name );
+        $this->assertEquals( "Nono", $user->getVersionModel( 1 )->name );
         $this->assertEquals( "John", $user->getVersionModel( 2 )->name );
         $this->assertEquals( "Michael", $user->getVersionModel( 3 )->name );
         $this->assertEquals( null, $user->getVersionModel( 4 ) );
@@ -298,8 +298,8 @@ class VersionableTest extends VersionableTestCase
     {
         // Create 3 versions
         $user = new TestVersionableUser();
-        $user->name = "Marcel";
-        $user->email = "m.pociot@test.php";
+        $user->name = "Nono";
+        $user->email = "nono.ma@test.php";
         $user->password = "12345";
         $user->last_login = $user->freshTimestamp();
         $user->reason = "Doing tests";
@@ -311,8 +311,8 @@ class VersionableTest extends VersionableTestCase
     public function testIgnoreDeleteTimestamp()
     {
         $user = new TestVersionableSoftDeleteUser();
-        $user->name = "Marcel";
-        $user->email = "m.pociot@test.php";
+        $user->name = "Nono";
+        $user->email = "nono.ma@test.php";
         $user->password = "12345";
         $user->last_login = $user->freshTimestamp();
         $user->save();
@@ -332,8 +332,8 @@ class VersionableTest extends VersionableTestCase
     {
 
         $user = new TestVersionableUser();
-        $user->name = "Marcel";
-        $user->email = "m.pociot@test.php";
+        $user->name = "Nono";
+        $user->email = "nono.ma@test.php";
         $user->password = "12345";
         $user->last_login = $user->freshTimestamp();
         $user->save();
@@ -351,8 +351,8 @@ class VersionableTest extends VersionableTestCase
     public function testDiffIgnoresTimestamps()
     {
         $user = new TestVersionableSoftDeleteUser();
-        $user->name = "Marcel";
-        $user->email = "m.pociot@test.php";
+        $user->name = "Nono";
+        $user->email = "nono.ma@test.php";
         $user->password = "12345";
         $user->last_login = $user->freshTimestamp();
         $user->save();
@@ -374,8 +374,8 @@ class VersionableTest extends VersionableTestCase
     {
         // Create 3 versions
         $user = new TestVersionableSoftDeleteUser();
-        $user->name = "Marcel";
-        $user->email = "m.pociot@test.php";
+        $user->name = "Nono";
+        $user->email = "nono.ma@test.php";
         $user->password = "12345";
         $user->last_login = $user->freshTimestamp();
         $user->save();
@@ -391,8 +391,8 @@ class VersionableTest extends VersionableTestCase
         $this->assertTrue( is_array($diff) );
 
         $this->assertCount(2, $diff);
-        $this->assertEquals( "Marcel", $diff["name"] );
-        $this->assertEquals( "m.pociot@test.php", $diff["email"] );
+        $this->assertEquals( "Nono", $diff["name"] );
+        $this->assertEquals( "nono.ma@test.php", $diff["email"] );
 
 
         $diff = $user->currentVersion()->diff( $user->versions()->orderBy("version_id","ASC")->offset(1)->first() );
@@ -463,7 +463,7 @@ class VersionableTest extends VersionableTestCase
         $name_v4 = 'fourth' ;
         
         $model = new ModelWithMaxVersions();
-        $model->email = "m.pociot@test.php";
+        $model->email = "nono.ma@test.php";
         $model->password = "foo";
         $model->name = $name_v1 ;
         $model->save();
@@ -492,8 +492,8 @@ class VersionableTest extends VersionableTestCase
 
     public function testAllowHiddenFields() {
         $user = new TestHiddenFieldsUser();
-        $user->name = "Marcel";
-        $user->email = "m.pociot@test.php";
+        $user->name = "Nono";
+        $user->email = "nono.ma@test.php";
         $user->password = "12345";
         $user->save();
         sleep(1);
@@ -533,8 +533,8 @@ class VersionableTest extends VersionableTestCase
     public function testAddVersionableToExistingUser()
     {
         $user = new \Illuminate\Foundation\Auth\User();
-        $user->name = "Danny";
-        $user->email = "danny.boy@bmail.php";
+        $user->name = "Nono";
+        $user->email = "nono.ma@bmail.php";
         $user->password = "12345";
         $user->save();
 
@@ -553,8 +553,8 @@ class VersionableTest extends VersionableTestCase
     public function testInitializeModel()
     {
         $user = new \Illuminate\Foundation\Auth\User();
-        $user->name = "Danny";
-        $user->email = "danny.boy@bmail.php";
+        $user->name = "Nono";
+        $user->email = "nono.ma@bmail.php";
         $user->password = "12345";
         $user->save();
 
@@ -563,11 +563,11 @@ class VersionableTest extends VersionableTestCase
         $user = TestVersionableUser::find($user->id);
         $this->assertCount(0, $user->versions );
         
-        TestVersionableUser::initializeVersionOnAllRows();
+        TestVersionableUser::initializeVersions();
         $this->assertCount(1, $user->fresh()->versions );
 
         //ASSERT THAT createInitialVersion() ONLY WORKS ONCE
-        TestVersionableUser::initializeVersionOnAllRows();
+        TestVersionableUser::initializeVersions();
         $this->assertCount(1, $user->fresh()->versions );
     }
 

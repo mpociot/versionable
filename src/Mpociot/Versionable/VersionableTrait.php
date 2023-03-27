@@ -30,26 +30,26 @@ trait VersionableTrait
 
     /**
      * Private variable to detect if this is an update
-     * or an insert
+     * or an insert.
      * @var bool
      */
     private $updating;
 
     /**
-     * Contains all dirty data that is valid for versioning
+     * Contains all dirty data that is valid for versioning.
      *
      * @var array
      */
     private $versionableDirtyData;
 
     /**
-     * Optional reason, why this version was created
+     * Optional reason, why this version was created.
      * @var string
      */
     private $reason;
 
     /**
-     * Flag that determines if the model allows versioning at all
+     * Flag that determines if the model allows versioning at all.
      * @var bool
      */
     protected $versioningEnabled = true;
@@ -73,8 +73,8 @@ trait VersionableTrait
     }
 
     /**
-     * Attribute mutator for "reason"
-     * Prevent "reason" to become a database attribute of model
+     * Attribute mutator for "reason".
+     * Prevent "reason" to become a database attribute of model.
      *
      * @param string $value
      */
@@ -84,7 +84,7 @@ trait VersionableTrait
     }
 
     /**
-     * Initialize model events
+     * Initialize model events.
      */
     public static function bootVersionableTrait()
     {
@@ -99,7 +99,7 @@ trait VersionableTrait
     }
 
     /**
-     * Return all versions of the model
+     * Return all versions of the model.
      * @return MorphMany
      */
     public function versions()
@@ -108,7 +108,7 @@ trait VersionableTrait
     }
 
     /**
-     * Returns the latest version available
+     * Returns the latest version available.
      * @return Version
      */
     public function currentVersion()
@@ -117,7 +117,7 @@ trait VersionableTrait
     }
 
     /**
-     * Returns the previous version
+     * Returns the previous version.
      * @return Version
      */
     public function previousVersion()
@@ -126,7 +126,7 @@ trait VersionableTrait
     }
 
     /**
-     * Get a model based on the version id
+     * Get a model based on the version id.
      *
      * @param $version_id
      *
@@ -143,7 +143,7 @@ trait VersionableTrait
 
     /**
      * Pre save hook to determine if versioning is enabled and if we're updating
-     * the model
+     * the model.
      * @return void
      */
     protected function versionablePreSave()
@@ -161,7 +161,7 @@ trait VersionableTrait
     protected function versionablePostSave()
     {
         /**
-         * We'll save new versions on updating and first creation
+         * We'll save new versions on updating and first creation.
          */
         if (
             ( $this->versioningEnabled === true && $this->updating && $this->isValidForVersioning() ) ||
@@ -191,10 +191,10 @@ trait VersionableTrait
 
 
     /**
-     * Initialize a version on every instance of a model
+     * Initialize a version on every instance of a model.
      * @return void
      */
-    public static function initializeVersionOnAllRows()
+    public static function initializeVersions()
     {
         foreach (self::all() as $obj) {
             $obj->createInitialVersion();
