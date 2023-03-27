@@ -81,7 +81,7 @@ If no version exists, this will create the initial version.
 If you want to do this for all instances of a model:
 
 ```php
-    Model::initializeVersionOnAllRows();
+    Model::initializeVersions();
 ```
 
 <a name="exclude" />
