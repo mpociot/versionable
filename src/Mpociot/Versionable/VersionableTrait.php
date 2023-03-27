@@ -189,6 +189,48 @@ trait VersionableTrait
         }
     }
 
+
+    /**
+     * Initialize a version on every instance of a model
+     * @return void
+     */
+    public static function initializeVersionOnAllRows()
+    {
+        foreach (self::all() as $obj) {
+            $obj->createInitialVersion();
+        }
+    }
+
+    /**
+     * Save a new version.
+     * @return void
+     */
+    public function createInitialVersion()
+    {
+        if( true === $this->fresh()->versions->isEmpty() &&
+            true === $this->versioningEnabled 
+        ) {
+
+            $class                     = $this->getVersionClass();
+            $version                   = new $class();
+            $version->versionable_id   = $this->getKey();
+            $version->versionable_type = method_exists($this, 'getMorphClass') ? $this->getMorphClass() : get_class($this);
+            $version->user_id          = $this->getAuthUserId();
+            
+            $versionedHiddenFields = $this->versionedHiddenFields ?? [];
+            $this->makeVisible($versionedHiddenFields);
+            $version->model_data       = serialize($this->attributesToArray());
+            $this->makeHidden($versionedHiddenFields);
+
+            if (!empty( $this->reason )) {
+                $version->reason = $this->reason;
+            }
+
+            $version->save();
+        }
+    }
+
+
     /**
      * Delete old versions of this model when they reach a specific count.
      * 
@@ -215,6 +257,7 @@ trait VersionableTrait
 
     /**
      * Determine if a new version should be created for this model.
+     * Checks if appropriate fields have been changed.
      *
      * @return bool
      */

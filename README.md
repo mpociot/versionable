@@ -67,6 +67,23 @@ Every time you update your model, a new version containing the previous attribut
 
 All timestamps and the optional soft-delete timestamp will be ignored.
 
+<a name="existing" />
+
+### Adding versions to existing data
+
+Versionable creates a version on update() of the *updated* model.  So, if you're installing this on an already existing application, you may want to create a version of the current model:
+
+```php
+    $model->createInitialVersion();
+```
+If no version exists, this will create the initial version.
+
+If you want to do this for all instances of a model:
+
+```php
+    Model::initializeVersionOnAllRows();
+```
+
 <a name="exclude" />
 
 ### Exclude attributes from versioning
