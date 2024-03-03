@@ -268,7 +268,7 @@ trait VersionableTrait
             $removeableKeys[] = $updatedAt;
         }
 
-        if (method_exists($this, 'getDeletedAtColumn') && ($deletedAt = $this->getDeletedAtColumn() !== null)) {
+        if (method_exists($this, 'getDeletedAtColumn') && ($deletedAt = $this->getDeletedAtColumn()) !== null) {
             $removeableKeys[] = $deletedAt;
         }
 
