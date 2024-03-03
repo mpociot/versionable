@@ -263,11 +263,13 @@ trait VersionableTrait
      */
     private function isValidForVersioning()
     {
-        $dontVersionFields = isset( $this->dontVersionFields ) ? $this->dontVersionFields : [];
-        $removeableKeys    = array_merge($dontVersionFields, [$this->getUpdatedAtColumn()]);
+        $removeableKeys = isset( $this->dontVersionFields ) ? $this->dontVersionFields : [];
+        if (($updatedAt = $this->getUpdatedAtColumn()) !== null) {
+            $removeableKeys[] = $updatedAt;
+        }
 
-        if (method_exists($this, 'getDeletedAtColumn')) {
-            $removeableKeys[] = $this->getDeletedAtColumn();
+        if (method_exists($this, 'getDeletedAtColumn') && ($deletedAt = $this->getDeletedAtColumn() !== null)) {
+            $removeableKeys[] = $deletedAt;
         }
 
         return ( count(array_diff_key($this->versionableDirtyData, array_flip($removeableKeys))) > 0 );
