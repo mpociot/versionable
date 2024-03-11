@@ -125,6 +125,16 @@ trait VersionableTrait
         return $this->getLatestVersions()->limit(1)->offset(1)->first();
     }
 
+	/**
+     * Returns version based on the version id
+     * @return Version
+     */
+	public function getVersion($version_id)
+    {
+		$class = $this->getVersionClass();
+		return $this->versions()->where("version_id", "=", $version_id)->first();
+    }
+
     /**
      * Get a model based on the version id.
      *
