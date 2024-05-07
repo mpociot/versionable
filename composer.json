@@ -1,7 +1,7 @@
 {
     "name": "mpociot/versionable",
     "license": "MIT",
-    "description": "Allows to create Laravel 4 / 5 / 6 / 7 / 8 / 9 / 10 Model versioning and restoring",
+    "description": "Allows to create Laravel 4 / 5 / 6 / 7 / 8 / 9 / 10 / 11 Model versioning and restoring",
     "keywords": [
         "model",
         "laravel",
