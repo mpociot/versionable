@@ -4,6 +4,8 @@ namespace Mpociot\Versionable;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Model;
+use Mpociot\Versionable\Encoders\Encoder;
+use Mpociot\Versionable\Encoders\SerializeEncoder;
 
 /**
  * Class Version
@@ -32,6 +34,16 @@ class Version extends Eloquent
     }
 
     /**
+     * Get the encoder.
+     *
+     * @return Encoder
+     */
+    private function getEncoder(): Encoder
+    {
+        return app(config('versionable.encoder', SerializeEncoder::class));
+    }
+
+    /**
      * Return the user responsible for this version
      * @return mixed
      */
@@ -50,11 +62,12 @@ class Version extends Eloquent
         $modelData = is_resource($this->model_data)
             ? stream_get_contents($this->model_data,-1,0)
             : $this->model_data;
+        $modelDataDecoded = $this->getEncoder()->decode($modelData);
 
         $className = self::getActualClassNameForMorph($this->versionable_type);
         $model = new $className();
         $model->unguard();
-        $model->fill(unserialize($modelData));
+        $model->fill($modelDataDecoded);
         $model->exists = true;
         $model->reguard();
         return $model;

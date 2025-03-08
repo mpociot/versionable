@@ -86,6 +86,93 @@ If you want to do this for all instances of a model:
 
 <a name="exclude" />
 
+### Using JSON encoding
+
+Run
+
+```
+php artisan vendor:publish --provider="Mpociot\Versionable\Providers\ServiceProvider" --tag="config"
+```
+
+Adjust the encoding in the config from `serialize` to `json`.
+
+Create and run a migration like the following:
+
+```
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Mpociot\Versionable\Version;
+
+class Encoding extends Migration
+{
+    protected $encodingCheck = [
+        'serialize' => '{',
+        'json' => 'a:',
+    ];
+
+    protected $chunkSize = 10;
+
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        $targetEncoding = config('versionable.encoding');
+        $sourceEncoding = $targetEncoding === 'json' ? 'serialize' : 'json';
+
+        $this->changeEncoding($targetEncoding, $sourceEncoding);
+
+        Schema::table('versions', function ($table) {
+            $table->json('model_data')->change();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        $sourceEncoding = config('versionable.encoding');
+        $targetEncoding = $sourceEncoding === 'json' ? 'serialize' : 'json';
+
+        $this->changeEncoding($targetEncoding, $sourceEncoding);
+
+        Schema::table('versions', function ($table) {
+            $table->longText('model_data')->change();
+        });
+    }
+
+    protected function changeEncoding($targetEncoding, $sourceEncoding)
+    {
+        $versions = Version::lazy($this->chunkSize);
+
+        foreach ($versions as $version) {
+            $this->validateData($version, $sourceEncoding);
+
+            $version->model_data = $targetEncoding === 'serialize'
+                ? serialize(json_decode($version->model_data, true))
+                : json_encode(unserialize($version->model_data));
+
+            $version->save();
+        }
+
+        return true;
+    }
+
+    protected function validateData(Version $version, $sourceEncoding)
+    {
+        if (strpos($version->model_data, $this->encodingCheck[$sourceEncoding]) === 0) {
+            throw new RuntimeException("Wrong source encoding while trying to convert from '$sourceEncoding': ".substr($version->model_data, 0, 10).'..');
+        }
+    }
+}
+```
+
 ### Exclude attributes from versioning
 
 Sometimes you don't want to create a version *every* time an attribute on your model changes. For example your User model might have a `last_login_at` attribute. 
