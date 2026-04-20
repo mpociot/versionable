@@ -53,10 +53,12 @@ class Version extends Eloquent
 
         $className = self::getActualClassNameForMorph($this->versionable_type);
         $model = new $className();
-        $model->unguard();
-        $model->fill(unserialize($modelData));
-        $model->exists = true;
-        $model->reguard();
+        
+        $model->unguarded(function() use ($model){
+            $model->fill(unserialize($modelData));
+            $model->exists = true;    
+        });
+        
         return $model;
     }
 
